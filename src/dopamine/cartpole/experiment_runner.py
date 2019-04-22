@@ -35,10 +35,13 @@ class CheckpointRunner(run_experiment.Runner):
                                                evaluation_steps,
                                                max_steps_per_episode)
         self.checkpoint_freq = checkpoint_freq
+        self.current_checkpoint = 0
 
     def run_experiment(self):
         """Runs a full experiment, spread over multiple iterations."""
         tf.logging.info('Beginning training...')
+        # init checkpoint number
+        self.current_checkpoint = 0
         if self._num_iterations <= self._start_iteration:
             tf.logging.warning('num_iterations (%d) < start_iteration(%d)',
                                self._num_iterations, self._start_iteration)
@@ -47,7 +50,25 @@ class CheckpointRunner(run_experiment.Runner):
         for iteration in range(self._start_iteration, self._num_iterations):
             statistics = self._run_one_iteration(iteration)
             self._log_experiment(iteration, statistics)
-            self._checkpoint_experiment(iteration)
+            # checkpoint with given frequency and after last iteration
+            if (iteration + 1) % self.checkpoint_freq == 0 or (iteration + 1) == self._num_iterations:
+                tf.logging.info('Checkpointing at ' + str(iteration))
+                self._checkpoint_experiment(iteration)
+
+    def _checkpoint_experiment(self, iteration):
+        """Checkpoint experiment data. Overwrite parent method to better handle checkpointing frequency.
+
+        Args:
+        iteration: int, iteration number for checkpointing.
+        """
+        experiment_data = self._agent.bundle_and_checkpoint(self._checkpoint_dir,
+                                                            iteration)
+        if experiment_data:
+            experiment_data['current_iteration'] = iteration
+            experiment_data['logs'] = self._logger.data
+            self._checkpointer.save_checkpoint(
+                self.current_checkpoint, experiment_data)
+            self.current_checkpoint = self.current_checkpoint + 1
 
 
 def create_runner(base_dir):
