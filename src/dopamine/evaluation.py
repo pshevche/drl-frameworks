@@ -25,9 +25,12 @@ from absl import app
 from absl import flags
 
 from dopamine.discrete_domains import run_experiment
-import experiment_runner
+import checkpoint_runner
 
 import tensorflow as tf
+
+import os
+import time
 
 
 flags.DEFINE_string('base_dir', None,
@@ -52,8 +55,21 @@ def main(unused_argv):
     """
     tf.logging.set_verbosity(tf.logging.INFO)
     run_experiment.load_gin_configs(FLAGS.gin_files, FLAGS.gin_bindings)
-    runner = experiment_runner.create_runner(FLAGS.base_dir)
+    runner = checkpoint_runner.create_runner(FLAGS.base_dir)
+    start_time = time.time()
     runner.run_experiment()
+    end_time = time.time()
+
+    # save runtime to file
+    ginfile = str(FLAGS.gin_files[0])
+    experiment_name = ginfile[ginfile.rfind('/') + 1: ginfile.rfind('.gin')]
+    filename = 'runtime_' + experiment_name + '.txt'
+    runtime_path = os.path.join(FLAGS.base_dir, filename)
+
+    f = open(runtime_path, 'w+')
+    f.write(experiment_name + ' took ' +
+            str(end_time - start_time) + ' seconds.')
+    f.close()
 
 
 if __name__ == '__main__':
