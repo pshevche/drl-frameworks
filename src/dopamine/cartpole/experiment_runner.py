@@ -52,7 +52,6 @@ class CheckpointRunner(run_experiment.Runner):
             self._log_experiment(iteration, statistics)
             # checkpoint with given frequency and after last iteration
             if (iteration + 1) % self.checkpoint_freq == 0 or (iteration + 1) == self._num_iterations:
-                tf.logging.info('Checkpointing at ' + str(iteration))
                 self._checkpoint_experiment(iteration)
 
     def _checkpoint_experiment(self, iteration):
