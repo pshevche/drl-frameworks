@@ -5,6 +5,8 @@ from __future__ import division
 from __future__ import print_function
 
 import argparse
+import os
+import time
 import yaml
 
 import ray
@@ -138,11 +140,26 @@ def run(args, parser):
             redis_max_memory=args.ray_redis_max_memory,
             num_cpus=args.ray_num_cpus,
             num_gpus=args.ray_num_gpus)
+
+    experiment_name = list(experiments.keys())[0]
+    results_dir = list(experiments.values())[0]['local_dir']
+
+    # store runtime
+    start_time = time.time()
     run_experiments(
         experiments,
         scheduler=_make_scheduler(args),
         queue_trials=args.queue_trials,
         resume=args.resume)
+    end_time = time.time()
+
+    filename = 'runtime_' + experiment_name + '.txt'
+    runtime_path = os.path.join(results_dir, filename)
+
+    f = open(runtime_path, 'w+')
+    f.write(experiment_name + ' took ' +
+            str(end_time - start_time) + ' seconds.')
+    f.close()
 
 
 if __name__ == "__main__":
