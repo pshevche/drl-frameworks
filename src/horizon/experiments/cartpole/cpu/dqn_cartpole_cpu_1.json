@@ -1,11 +1,11 @@
 {
     "env": "CartPole-v0",
     "model_type": "pytorch_discrete_dqn",
-    "max_replay_memory_size": 10000,
+    "max_replay_memory_size": 50000,
     "use_gpu": false,
     "rl": {
         "gamma": 0.99,
-        "target_update_rate": 0.1,
+        "target_update_rate": 0.002,
         "reward_burnin": 1,
         "maxq_learning": 1,
         "epsilon": 0.05,

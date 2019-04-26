@@ -9,6 +9,15 @@ dqn_cartpole_cpu_100:
     timesteps_total: 500000
   # all other hyperparameters (e.g. length of one iteration)
   config:
+    adam_epsilon: 0.0003125
+    buffer_size: 50000
+    duelling: False
+    double_q: False 
     evaluation_interval: 1
+    evaluation_num_episodes: 100
+    lr: 0.001
     num_workers: 0
     output: "logdir"
+    prioritized_replay: False
+    timesteps_per_iteration: 1000
+    train_batch_size: 128
