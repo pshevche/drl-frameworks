@@ -5,6 +5,7 @@ import json
 import logging
 import numpy as np
 import sys
+import time
 
 from Horizon.ml.rl.training.rl_dataset import RLDataset
 from Horizon.ml.rl.test.gym import run_gym as horizon_runner
@@ -370,6 +371,7 @@ def main(args):
         args.start_saving_from_score,
         args.path_to_pickled_transitions,
     )
+
     if dataset:
         dataset.save()
     if args.results_file_path:

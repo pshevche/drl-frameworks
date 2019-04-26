@@ -1,0 +1,14 @@
+dqn_cartpole_cpu_10:
+  run: DQN
+  env: CartPole-v0
+  local_dir: "src/ray/results/dqn_cartpole_cpu_10"  
+  checkpoint_freq: 10
+  checkpoint_at_end: True
+  # number of iterations
+  stop:
+    timesteps_total: 3000
+  # all other hyperparameters (e.g. length of one iteration)
+  config:
+    evaluation_interval: 1
+    num_workers: 0
+    output: "logdir"

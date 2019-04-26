@@ -1,0 +1,14 @@
+ddpg_cartpole_cpu_1:
+  run: DDPG
+  env: CartPole-v0
+  local_dir: "src/ray/results/ddpg_cartpole_cpu_1"  
+  checkpoint_freq: 1
+  checkpoint_at_end: True
+  # number of iterations
+  stop:
+    timesteps_total: 3000
+  # all other hyperparameters (e.g. length of one iteration)
+  config:
+    evaluation_interval: 1
+    num_workers: 0
+    output: "logdir"

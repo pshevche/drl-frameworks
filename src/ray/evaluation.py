@@ -141,9 +141,6 @@ def run(args, parser):
             num_cpus=args.ray_num_cpus,
             num_gpus=args.ray_num_gpus)
 
-    experiment_name = list(experiments.keys())[0]
-    results_dir = list(experiments.values())[0]['local_dir']
-
     # store runtime
     start_time = time.time()
     run_experiments(
@@ -153,6 +150,8 @@ def run(args, parser):
         resume=args.resume)
     end_time = time.time()
 
+    experiment_name = list(experiments.keys())[0]
+    results_dir = list(experiments.values())[0]['local_dir']
     filename = 'runtime_' + experiment_name + '.txt'
     runtime_path = os.path.join(results_dir, filename)
 
