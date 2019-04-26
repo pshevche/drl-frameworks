@@ -6,7 +6,7 @@ dqn_cartpole_gpu_1:
   checkpoint_at_end: True
   # number of iterations
   stop:
-    timesteps_total: 3000
+    timesteps_total: 500000
   # all other hyperparameters (e.g. length of one iteration)
   config:
     evaluation_interval: 1
