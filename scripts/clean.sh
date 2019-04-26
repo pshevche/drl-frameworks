@@ -1,10 +1,10 @@
 # remove dopamine results
-find src/dopamine -type d -name __pycache__ -exec rm -rf {} \;
-find src/dopamine -type d -name results -exec rm -rf {} \;
+find src/dopamine -name __pycache__ -type d -exec rm -r {} +
+find src/dopamine -name results -type d -exec rm -r {} +
 
 # remove ray results
-find src/ray -type d -name results -exec rm -rf {} \;
+find src/ray -name results -type d -exec rm -r {} +
 
 # remove horizon results
-find src/horizon -type d -name __pycache__ -exec rm -rf {} \;
-find src/horizon -type d -name results -exec rm -rf {} \;
+find src/horizon -name __pycache__ -type d -exec rm -r {} +
+find src/horizon -name results -type d -exec rm -r {} +
