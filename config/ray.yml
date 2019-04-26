@@ -79,5 +79,4 @@ dependencies:
     - six==1.12.0
     - typing==3.6.6
     - urllib3==1.24.1
-prefix: /home/pshevche/miniconda3/envs/ray-env
 

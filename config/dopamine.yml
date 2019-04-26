@@ -61,5 +61,4 @@ dependencies:
     - termcolor==1.1.0
     - urllib3==1.24.1
     - werkzeug==0.15.1
-prefix: /home/pshevche/miniconda3/envs/dopamine-env
 

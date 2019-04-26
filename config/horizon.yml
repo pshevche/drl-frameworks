@@ -103,5 +103,4 @@ dependencies:
     - pyopengl==3.1.0
     - typing==3.6.6
     - typing-extensions==3.7.2
-prefix: /home/pshevche/miniconda3/envs/horizon-env
 
