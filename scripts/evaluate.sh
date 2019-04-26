@@ -33,12 +33,20 @@ echo "--- RAY EXPERIMENTS COMPLETED ---"
 echo "--- STARTING HORIZON EXPERIMENTS ---"
 conda activate horizon-env
 echo "--- STARTING HORIZON CARTPOLE EXPERIMENTS ---"
-for fullfile in src/horizon/experiments/cartpole/*.json; do 
+for fullfile in src/horizon/experiments/cartpole/cpu/*.json; do 
     filename=$(basename -- "$fullfile")
     experiment="${filename%.*}"
     echo "--- STARTING EXPERIMENT ${experiment} --- "
     mkdir -p src/horizon/results/${experiment}
     python src/horizon/run_evaluation.py -p src/horizon/experiments/cartpole/${experiment}.json -f src/horizon/results/${experiment}/checkpoints_${experiment}.json -r src/horizon/results/${experiment}/rewards_${experiment}.csv
+    echo "--- EXPERIMENT ${experiment} COMPLETED --- "
+done
+for fullfile in src/horizon/experiments/cartpole/gpu/*.json; do 
+    filename=$(basename -- "$fullfile")
+    experiment="${filename%.*}"
+    echo "--- STARTING EXPERIMENT ${experiment} --- "
+    mkdir -p src/horizon/results/${experiment}
+    python src/horizon/run_evaluation.py -g 0 -p src/horizon/experiments/cartpole/${experiment}.json -f src/horizon/results/${experiment}/checkpoints_${experiment}.json -r src/horizon/results/${experiment}/rewards_${experiment}.csv
     echo "--- EXPERIMENT ${experiment} COMPLETED --- "
 done
 echo "--- HORIZON CARTPOLE EXPERIMENTS COMPLETED ---"
