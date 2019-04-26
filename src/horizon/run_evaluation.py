@@ -4,6 +4,7 @@ import argparse
 import json
 import logging
 import numpy as np
+import os
 import sys
 import time
 
@@ -47,6 +48,8 @@ def custom_train(
     stop_training_after_solved=False,
     offline_train_epochs=3,
     path_to_pickled_transitions=None,
+    timesteps_total=1000,
+    checkpoint_after_ts=1
 ):
     if offline_train:
         return horizon_runner.train_gym_offline_rl(
@@ -87,6 +90,8 @@ def custom_train(
             solved_reward_threshold,
             max_episodes_to_run_after_solved,
             stop_training_after_solved,
+            timesteps_total,
+            checkpoint_after_ts
         )
 
 
@@ -113,6 +118,8 @@ def custom_train_gym_online_rl(
     solved_reward_threshold,
     max_episodes_to_run_after_solved,
     stop_training_after_solved,
+    timesteps_total,
+    checkpoint_after_ts
 ):
     """Train off of dynamic set of transitions generated on-policy."""
     total_timesteps = 0
@@ -122,7 +129,8 @@ def custom_train_gym_online_rl(
     solved = False
     policy_id = 0
 
-    for i in range(num_episodes):
+    i = 0
+    while i < num_episodes and total_timesteps < timesteps_total:
         if (
             max_episodes_to_run_after_solved is not None
             and episodes_since_solved > max_episodes_to_run_after_solved
@@ -193,6 +201,7 @@ def custom_train_gym_online_rl(
             )
 
             if save_timesteps_to_dataset and (
+                total_timesteps % checkpoint_after_ts == 0 or total_timesteps == timesteps_total) and (
                 start_saving_from_score is None
                 or best_episode_score_seeen >= start_saving_from_score
             ):
@@ -283,6 +292,8 @@ def custom_train_gym_online_rl(
         else:
             gym_env.decay_epsilon()
 
+        i += 1
+
     logger.info(
         "Avg. reward history for {}: {}".format(
             test_run_name, avg_reward_history)
@@ -362,6 +373,7 @@ def main(args):
         params = json.load(f)
 
     dataset = RLDataset(args.file_path) if args.file_path else None
+    start_time = time.time()
     reward_history, timestep_history, trainer, predictor = horizon_runner.run_gym(
         params,
         args.offline_train,
@@ -377,6 +389,22 @@ def main(args):
     if args.results_file_path:
         write_lists_to_csv(args.results_file_path,
                            reward_history, timestep_history)
+
+    end_time = time.time()
+
+    # save runtime to file
+    result_file = args.results_file_path
+    base_dir = result_file[:result_file.rfind('/')]
+    config_file = args.parameters.strip()
+    experiment_name = config_file[config_file.rfind(
+        '/') + 1: config_file.rfind('.json')]
+    filename = 'runtime_' + experiment_name + '.txt'
+    runtime_path = os.path.join(base_dir, filename)
+
+    f = open(runtime_path, 'w+')
+    f.write(experiment_name + ' took ' +
+            str(end_time - start_time) + ' seconds.')
+    f.close()
     return reward_history
 
 
