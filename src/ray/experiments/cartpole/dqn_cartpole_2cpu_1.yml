@@ -11,7 +11,7 @@ dqn_cartpole_2cpu_1:
   config:
     adam_epsilon: 0.0003125
     buffer_size: 50000
-    duelling: False
+    dueling: False
     double_q: False 
     evaluation_interval: 1
     evaluation_num_episodes: 100
