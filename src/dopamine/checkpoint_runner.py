@@ -74,7 +74,7 @@ class CheckpointRunner(run_experiment.Runner):
 
     def run_propagation_test(self):
         statistics = iteration_statistics.IterationStatistics()
-        _, _, _ = self._run_one_phase(
+        _ = self._run_one_phase(
             self.propagation_steps, statistics, 'eval')
 
 
