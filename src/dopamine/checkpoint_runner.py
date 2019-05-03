@@ -3,6 +3,7 @@ import tensorflow as tf
 
 from dopamine.discrete_domains import run_experiment
 from dopamine.discrete_domains import atari_lib
+from dopamine.discrete_domains import iteration_statistics
 
 
 @gin.configurable
@@ -23,7 +24,8 @@ class CheckpointRunner(run_experiment.Runner):
                  num_iterations=200,
                  training_steps=250000,
                  evaluation_steps=125000,
-                 max_steps_per_episode=27000):
+                 max_steps_per_episode=27000,
+                 propagation_steps=None):
         super(CheckpointRunner, self).__init__(base_dir,
                                                create_agent_fn,
                                                create_environment_fn,
@@ -36,6 +38,7 @@ class CheckpointRunner(run_experiment.Runner):
                                                max_steps_per_episode)
         self.checkpoint_freq = checkpoint_freq
         self.current_checkpoint = 0
+        self.propagation_steps = propagation_steps
 
     def run_experiment(self):
         """Runs a full experiment, spread over multiple iterations."""
@@ -68,6 +71,11 @@ class CheckpointRunner(run_experiment.Runner):
             self._checkpointer.save_checkpoint(
                 self.current_checkpoint, experiment_data)
             self.current_checkpoint = self.current_checkpoint + 1
+
+    def run_propagation_test(self):
+        statistics = iteration_statistics.IterationStatistics()
+        _, _, _ = self._run_one_phase(
+            self.propagation_steps, statistics, 'eval')
 
 
 def create_runner(base_dir):

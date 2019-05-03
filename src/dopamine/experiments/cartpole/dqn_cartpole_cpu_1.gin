@@ -31,6 +31,7 @@ CheckpointRunner.training_steps = 1000
 CheckpointRunner.evaluation_steps = 1000
 CheckpointRunner.max_steps_per_episode = 200  # Default max episode length.
 CheckpointRunner.checkpoint_freq = 1  # Checkpointing frequency.
+CheckpointRunner.propagation_steps = 500000 # Measure runtime over this number of steps
 
 WrappedReplayBuffer.replay_capacity = 50000
 WrappedReplayBuffer.batch_size = 128

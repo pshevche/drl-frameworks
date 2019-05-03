@@ -71,6 +71,19 @@ def main(unused_argv):
             str(end_time - start_time) + ' seconds.')
     f.close()
 
+    if runner.propagation_steps:
+        print("--- STARTING DOPAMINE CARTPOLE PROPAGATION EXPERIMENT ---\n")
+        start_time = time.time()
+        runner.run_propagation_test()
+        end_time = time.time()
+        filename = 'propagation_runtime_' + experiment_name + '.txt'
+        runtime_path = os.path.join(FLAGS.base_dir, filename)
+        f = open(runtime_path, 'w+')
+        f.write(experiment_name + ' took ' +
+                str(end_time - start_time) + ' seconds.')
+        f.close()
+        print("--- DOPAMINE CARTPOLE PROPAGATION EXPERIMENT COMPLETED ---\n")
+
 
 if __name__ == '__main__':
     flags.mark_flag_as_required('base_dir')
