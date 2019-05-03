@@ -16,10 +16,35 @@ from Horizon.ml.rl.test.gym.open_ai_gym_environment import (
     ModelType,
     OpenAIGymEnvironment,
 )
+from ml.rl.thrift.core.ttypes import RLParameters
 
 
 logger = logging.getLogger(__name__)
 USE_CPU = -1
+
+
+def create_env(params):
+    rl_parameters = RLParameters(**params["rl"])
+
+    env_type = params["env"]
+    epsilon = rl_parameters.epsilon
+
+    epsilon_decay, minimum_epsilon = 1.0, None
+    if "epsilon_decay" in params["run_details"]:
+        epsilon_decay = params["run_details"]["epsilon_decay"]
+        del params["run_details"]["epsilon_decay"]
+    if "minimum_epsilon" in params["run_details"]:
+        minimum_epsilon = params["run_details"]["minimum_epsilon"]
+        del params["run_details"]["minimum_epsilon"]
+
+    return OpenAIGymEnvironment(
+        env_type,
+        epsilon,
+        rl_parameters.softmax_policy,
+        rl_parameters.gamma,
+        epsilon_decay,
+        minimum_epsilon,
+    )
 
 
 def custom_train(
@@ -49,7 +74,8 @@ def custom_train(
     offline_train_epochs=3,
     path_to_pickled_transitions=None,
     timesteps_total=1000,
-    checkpoint_after_ts=1
+    checkpoint_after_ts=1,
+    num_propagation_steps=None
 ):
     if offline_train:
         return horizon_runner.train_gym_offline_rl(
@@ -405,6 +431,29 @@ def main(args):
     f.write(experiment_name + ' took ' +
             str(end_time - start_time) + ' seconds.')
     f.close()
+
+    # propagation testing
+    try:
+        num_propagation_steps = params["run_details"]["num_propagation_steps"]
+        if num_propagation_steps:
+            print("--- STARTING HORIZON CARTPOLE PROPAGATION EXPERIMENT ---")
+            env = create_env(params)
+            start_time = time.time()
+            _ = env.run_ep_n_times(
+                num_propagation_steps, predictor, test=True
+            )
+            end_time = time.time()
+            print("--- HORIZON CARTPOLE PROPAGATION EXPERIMENT COMPLETED ---")
+            filename = 'propagation_runtime_' + experiment_name + '.txt'
+            runtime_path = os.path.join(base_dir, filename)
+
+            f = open(runtime_path, 'w+')
+            f.write(experiment_name + ' took ' +
+                    str(end_time - start_time) + ' seconds.')
+            f.close()
+    except KeyError:
+        pass
+
     return reward_history
 
 
