@@ -1,7 +1,7 @@
-dqn_cartpole_cpu_1:
+dqn_cartpole_3cpu_1:
   run: DQN
   env: CartPole-v0
-  local_dir: "src/ray/results/dqn_cartpole_cpu_1"  
+  local_dir: "src/ray/results/dqn_cartpole_3cpu_1"  
   checkpoint_freq: 1
   checkpoint_at_end: True
   # number of iterations
