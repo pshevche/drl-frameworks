@@ -33,13 +33,13 @@ class Tensorboard:
 
     def log_summary(self, num_episodes_train, average_reward_train, num_episodes_eval, average_reward_eval, iteration):
         summary = tf.Summary(value=[
-        tf.Summary.Value(tag='Train/NumEpisodes',
+        tf.Summary.Value(tag='HorizonTrain/NumEpisodes',
                          simple_value=num_episodes_train),
-        tf.Summary.Value(tag='Train/AverageReturns',
+        tf.Summary.Value(tag='HorizonTrain/AverageReturns',
                          simple_value=average_reward_train),
-        tf.Summary.Value(tag='Eval/NumEpisodes',
+        tf.Summary.Value(tag='HorizonEval/NumEpisodes',
                          simple_value=num_episodes_eval),
-        tf.Summary.Value(tag='Eval/AverageReturns',
+        tf.Summary.Value(tag='HorizonEval/AverageReturns',
                          simple_value=average_reward_eval)
         ])
         self.writer.add_summary(summary, iteration)
