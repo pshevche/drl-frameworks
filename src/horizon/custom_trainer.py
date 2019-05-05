@@ -1,5 +1,6 @@
 import logging
 import numpy as np
+import io
 
 from Horizon.ml.rl.test.gym import run_gym as horizon_runner
 from Horizon.ml.rl.test.gym.open_ai_gym_environment import (
@@ -81,7 +82,7 @@ def custom_train(
             max_episodes_to_run_after_solved,
             stop_training_after_solved,
             timesteps_total,
-            checkpoint_after_ts
+            checkpoint_after_ts,
         )
 
 
@@ -109,16 +110,17 @@ def custom_train_gym_online_rl(
     max_episodes_to_run_after_solved,
     stop_training_after_solved,
     timesteps_total,
-    checkpoint_after_ts
+    checkpoint_after_ts,
 ):
     """Train off of dynamic set of transitions generated on-policy."""
+    
     total_timesteps = 0
-    avg_reward_history, timestep_history = [], []
+    avg_test_history, avg_reward_history, timestep_history, test_episodes, eval_episodes = [], [], [],[],[]
     best_episode_score_seeen = -1e20
     episodes_since_solved = 0
     solved = False
     policy_id = 0
-
+    reward_hist = list()
     i = 0
     while i < num_episodes and total_timesteps < timesteps_total:
         if (
@@ -232,6 +234,9 @@ def custom_train_gym_online_rl(
 
             # Evaluation loop
             if total_timesteps % test_every_ts == 0 and total_timesteps > test_after_ts:
+                avg_test_reward= sum(reward_hist) / len(reward_hist)
+                avg_test_history.append(avg_test_reward)
+                
                 avg_rewards, avg_discounted_rewards = gym_env.run_ep_n_times(
                     avg_over_num_episodes, predictor, test=True
                 )
@@ -243,8 +248,9 @@ def custom_train_gym_online_rl(
                     and best_episode_score_seeen > solved_reward_threshold
                 ):
                     solved = True
-
                 avg_reward_history.append(avg_rewards)
+                test_episodes.append(len(reward_hist))
+                eval_episodes.append(avg_over_num_episodes)
                 timestep_history.append(total_timesteps)
                 logger.info(
                     "Achieved an average reward score of {} over {} evaluations."
@@ -252,16 +258,29 @@ def custom_train_gym_online_rl(
                         avg_rewards, avg_over_num_episodes, i + 1, total_timesteps
                     )
                 )
+                logger.info(
+                    "Achieved an average reward score of {} during {} training episodes."
+                    " Total episodes: {}, total timesteps: {}.".format(
+                        avg_test_reward, len(reward_hist), i + 1, total_timesteps
+                    )
+                )
+                reward_hist.clear()
                 if score_bar is not None and avg_rewards > score_bar:
                     logger.info(
-                        "Avg. reward history for {}: {}".format(
+                        "Avg. reward history during evaluation for {}: {}".format(
                             test_run_name, avg_reward_history
                         )
                     )
-                    return avg_reward_history, timestep_history, trainer, predictor
+                    logger.info(
+                        "Avg. reward history during training for {}: {}".format(
+                            test_run_name, avg_test_history
+                        )
+                    )
+                    return avg_reward_history, avg_test_history, timestep_history, test_episodes, eval_episodes, trainer, predictor
 
             if max_steps and ep_timesteps >= max_steps:
                 break
+        reward_hist.append(reward_sum)
 
         # Always eval on last episode if previous eval loop didn't return.
         if i == num_episodes - 1:
@@ -277,6 +296,18 @@ def custom_train_gym_online_rl(
                 )
             )
 
+            avg_test_reward= sum(reward_hist) / len(reward_hist)
+            avg_test_history.append(avg_test_reward)
+                
+            logger.info(
+                    "Achieved an average reward score of {} during {} training episodes."
+                    " Total episodes: {}, total timesteps: {}.".format(
+                        avg_test_reward, len(reward_hist), i + 1, total_timesteps
+                    )
+            )
+            reward_hist.clear()
+
+
         if solved:
             gym_env.epsilon = gym_env.minimum_epsilon
         else:
@@ -284,8 +315,12 @@ def custom_train_gym_online_rl(
 
         i += 1
 
-    logger.info(
-        "Avg. reward history for {}: {}".format(
-            test_run_name, avg_reward_history)
+    logger.info("Avg. reward history during evaluation for {}: {}".format(
+               test_run_name, avg_reward_history
+              )
     )
-    return avg_reward_history, timestep_history, trainer, predictor
+    logger.info("Avg. reward history during training for {}: {}".format(
+               test_run_name, avg_test_history
+              )
+    )
+    return avg_reward_history, avg_test_history, timestep_history, test_episodes, eval_episodes, trainer, predictor
