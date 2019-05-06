@@ -6,6 +6,8 @@ import logging
 import os
 import sys
 import time
+import tensorflow as tf
+import io
 
 from custom_trainer import custom_train
 from custom_gym_env import create_custom_env
@@ -22,6 +24,26 @@ USE_CPU = -1
 logger = logging.getLogger(__name__)
 horizon_runner.train = custom_train
 
+class Tensorboard:
+    def __init__(self, logdir):
+        self.writer = tf.summary.FileWriter(logdir)
+
+    def close(self):
+        self.writer.close()
+
+    def log_summary(self, num_episodes_train, average_reward_train, num_episodes_eval, average_reward_eval, iteration):
+        summary = tf.Summary(value=[
+        tf.Summary.Value(tag='Horizon/Train/NumEpisodes',
+                         simple_value=num_episodes_train),
+        tf.Summary.Value(tag='Horizon/Train/AverageReturns',
+                         simple_value=average_reward_train),
+        tf.Summary.Value(tag='Horizon/Eval/NumEpisodes',
+                         simple_value=num_episodes_eval),
+        tf.Summary.Value(tag='Horizon/Eval/AverageReturns',
+                         simple_value=average_reward_eval)
+        ])
+        self.writer.add_summary(summary, iteration)
+        self.writer.flush()                
 
 def main(args):
     parser = argparse.ArgumentParser(
@@ -65,6 +87,13 @@ def main(args):
     parser.add_argument(
         "-r",
         "--results_file_path",
+        help="If set, save test results to file.",
+        type=str,
+        default=None,
+    )
+    parser.add_argument(
+        "-v",
+        "--evaluation_file_path",
         help="If set, save evaluation results to file.",
         type=str,
         default=None,
@@ -93,7 +122,7 @@ def main(args):
 
     dataset = RLDataset(args.file_path) if args.file_path else None
     start_time = time.time()
-    reward_history, timestep_history, trainer, predictor = horizon_runner.run_gym(
+    reward_history, test_history, timestep_history, test_episodes, eval_episodes, trainer, predictor = horizon_runner.run_gym(
         params,
         args.offline_train,
         args.score_bar,
@@ -105,15 +134,20 @@ def main(args):
 
     if dataset:
         dataset.save()
+    if args.evaluation_file_path:
+        write_lists_to_csv(args.evaluation_file_path,
+                           reward_history, timestep_history)
     if args.results_file_path:
         write_lists_to_csv(args.results_file_path,
-                           reward_history, timestep_history)
+                           test_history, timestep_history)
 
     end_time = time.time()
 
+
     # save runtime to file
-    result_file = args.results_file_path
-    base_dir = result_file[:result_file.rfind('/')]
+    #result_file = args.results_file_path
+    evaluation_file = args.evaluation_file_path
+    base_dir = evaluation_file[:evaluation_file.rfind('/')]
     config_file = args.parameters.strip()
     experiment_name = config_file[config_file.rfind(
         '/') + 1: config_file.rfind('.json')]
@@ -124,6 +158,12 @@ def main(args):
     f.write(experiment_name + ' took ' +
             str(end_time - start_time) + ' seconds.')
     f.close()
+    
+    tensorboard = Tensorboard(base_dir+"/"+experiment_name)
+    for i in range(0,len(reward_history)):
+      tensorboard.log_summary(test_episodes[i], test_history[i],eval_episodes[i], reward_history[i], timestep_history[i])
+    tensorboard.close()
+
 
     # propagation testing
     try:
