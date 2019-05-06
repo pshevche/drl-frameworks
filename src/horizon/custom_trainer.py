@@ -113,15 +113,18 @@ def custom_train_gym_online_rl(
     checkpoint_after_ts,
 ):
     """Train off of dynamic set of transitions generated on-policy."""
-    
-    total_timesteps = 0
-    avg_test_history, avg_reward_history, timestep_history, test_episodes, eval_episodes = [], [], [],[],[]
-    best_episode_score_seeen = -1e20
-    episodes_since_solved = 0
-    solved = False
-    policy_id = 0
-    reward_hist = list()
+
     i = 0
+    total_timesteps = 0
+    best_episode_score_seeen = -1e20
+    policy_id = 0
+    solved = False
+    episodes_since_solved = 0
+    # logging
+    avg_train_history, train_episodes = [], []
+    avg_eval_history, eval_episodes = [], []
+    timesteps_history = []
+    reward_hist = list()
     while i < num_episodes and total_timesteps < timesteps_total:
         if (
             max_episodes_to_run_after_solved is not None
@@ -234,9 +237,6 @@ def custom_train_gym_online_rl(
 
             # Evaluation loop
             if total_timesteps % test_every_ts == 0 and total_timesteps > test_after_ts:
-                avg_test_reward= sum(reward_hist) / len(reward_hist)
-                avg_test_history.append(avg_test_reward)
-                
                 avg_rewards, avg_discounted_rewards = gym_env.run_ep_n_times(
                     avg_over_num_episodes, predictor, test=True
                 )
@@ -248,10 +248,15 @@ def custom_train_gym_online_rl(
                     and best_episode_score_seeen > solved_reward_threshold
                 ):
                     solved = True
-                avg_reward_history.append(avg_rewards)
-                test_episodes.append(len(reward_hist))
+
+                # save Tensorboard statistics
+                timesteps_history.append(total_timesteps)
+                avg_train_reward = sum(reward_hist) / len(reward_hist)
+                avg_train_history.append(avg_train_reward)
+                train_episodes.append(len(reward_hist))
+                avg_eval_history.append(avg_rewards)
                 eval_episodes.append(avg_over_num_episodes)
-                timestep_history.append(total_timesteps)
+
                 logger.info(
                     "Achieved an average reward score of {} over {} evaluations."
                     " Total episodes: {}, total timesteps: {}.".format(
@@ -261,22 +266,23 @@ def custom_train_gym_online_rl(
                 logger.info(
                     "Achieved an average reward score of {} during {} training episodes."
                     " Total episodes: {}, total timesteps: {}.".format(
-                        avg_test_reward, len(reward_hist), i + 1, total_timesteps
+                        avg_train_reward, len(
+                            reward_hist), i + 1, total_timesteps
                     )
                 )
                 reward_hist.clear()
                 if score_bar is not None and avg_rewards > score_bar:
                     logger.info(
                         "Avg. reward history during evaluation for {}: {}".format(
-                            test_run_name, avg_reward_history
+                            test_run_name, avg_eval_history
                         )
                     )
                     logger.info(
                         "Avg. reward history during training for {}: {}".format(
-                            test_run_name, avg_test_history
+                            test_run_name, avg_train_history
                         )
                     )
-                    return avg_reward_history, avg_test_history, timestep_history, test_episodes, eval_episodes, trainer, predictor
+                    return avg_train_history, train_episodes, avg_eval_history, eval_episodes, iteration_history, trainer, predictor
 
             if max_steps and ep_timesteps >= max_steps:
                 break
@@ -287,8 +293,15 @@ def custom_train_gym_online_rl(
             avg_rewards, avg_discounted_rewards = gym_env.run_ep_n_times(
                 avg_over_num_episodes, predictor, test=True
             )
-            avg_reward_history.append(avg_rewards)
-            timestep_history.append(total_timesteps)
+
+            # save Tensorboard statistics
+            timesteps_history.append(total_timesteps)
+            avg_train_reward = sum(reward_hist) / len(reward_hist)
+            avg_train_history.append(avg_train_reward)
+            train_episodes.append(len(reward_hist))
+            avg_eval_history.append(avg_rewards)
+            eval_episodes.append(avg_over_num_episodes)
+
             logger.info(
                 "Achieved an average reward score of {} over {} evaluations."
                 " Total episodes: {}, total timesteps: {}.".format(
@@ -296,17 +309,14 @@ def custom_train_gym_online_rl(
                 )
             )
 
-            avg_test_reward= sum(reward_hist) / len(reward_hist)
-            avg_test_history.append(avg_test_reward)
-                
             logger.info(
-                    "Achieved an average reward score of {} during {} training episodes."
-                    " Total episodes: {}, total timesteps: {}.".format(
-                        avg_test_reward, len(reward_hist), i + 1, total_timesteps
-                    )
+                "Achieved an average reward score of {} during {} training episodes."
+                " Total episodes: {}, total timesteps: {}.".format(
+                    avg_train_reward, len(
+                        reward_hist), i + 1, total_timesteps
+                )
             )
             reward_hist.clear()
-
 
         if solved:
             gym_env.epsilon = gym_env.minimum_epsilon
@@ -316,11 +326,11 @@ def custom_train_gym_online_rl(
         i += 1
 
     logger.info("Avg. reward history during evaluation for {}: {}".format(
-               test_run_name, avg_reward_history
-              )
+        test_run_name, avg_eval_history
+    )
     )
     logger.info("Avg. reward history during training for {}: {}".format(
-               test_run_name, avg_test_history
-              )
+        test_run_name, avg_train_history
     )
-    return avg_reward_history, avg_test_history, timestep_history, test_episodes, eval_episodes, trainer, predictor
+    )
+    return avg_train_history, train_episodes, avg_eval_history, eval_episodes, timesteps_history, trainer, predictor

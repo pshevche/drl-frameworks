@@ -68,12 +68,11 @@ def run(args, parser):
     rollout(agent, env_name, num_steps)
     end_time = time.time()
 
-    filename = 'inference_runtime_' + experiment_name + '.txt'
-    runtime_path = os.path.join(results_dir, filename)
+    inference_file = os.path.join(results_dir, 'runtime', 'inference.csv')
 
-    f = open(runtime_path, 'w+')
-    f.write(experiment_name + ' took ' +
-            str(end_time - start_time) + ' seconds for inference.')
+    f = open(inference_file, 'a+')
+    f.write(experiment_name + ', ' +
+            str(end_time - start_time) + '\n')
     f.close()
     print("--- RAY CARTPOLE inference EXPERIMENT COMPLETED ---\n")
 

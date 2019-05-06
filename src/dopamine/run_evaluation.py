@@ -53,36 +53,34 @@ def main(unused_argv):
     Args:
       unused_argv: Arguments (unused).
     """
+    # init logging
     tf.logging.set_verbosity(tf.logging.INFO)
     run_experiment.load_gin_configs(FLAGS.gin_files, FLAGS.gin_bindings)
-    runner = checkpoint_runner.create_runner(FLAGS.base_dir)
+    ginfile = str(FLAGS.gin_files[0])
+    experiment_name = ginfile[ginfile.rfind('/') + 1: ginfile.rfind('.gin')]
+    log_dir = os.path.join(FLAGS.base_dir, experiment_name)
+    runtime_file = os.path.join(FLAGS.base_dir, 'runtime', 'runtime.csv')
+    inference_file = os.path.join(FLAGS.base_dir, 'runtime', 'inference.csv')
+
+    runner = checkpoint_runner.create_runner(log_dir)
     start_time = time.time()
     runner.run_experiment()
     end_time = time.time()
 
-    # save runtime to file
-    ginfile = str(FLAGS.gin_files[0])
-    experiment_name = ginfile[ginfile.rfind('/') + 1: ginfile.rfind('.gin')]
-    filename = 'runtime_' + experiment_name + '.txt'
-    runtime_path = os.path.join(FLAGS.base_dir, filename)
-
-    f = open(runtime_path, 'w+')
-    f.write(experiment_name + ' took ' +
-            str(end_time - start_time) + ' seconds.')
+    f = open(runtime_file, 'a+')
+    f.write(experiment_name + ', ' + str(end_time - start_time) + '\n')
     f.close()
 
     if runner.inference_steps:
-        print("--- STARTING DOPAMINE CARTPOLE inference EXPERIMENT ---\n")
+        print("--- STARTING DOPAMINE CARTPOLE INFERENCE EXPERIMENT ---\n")
         start_time = time.time()
         runner.run_inference_test()
         end_time = time.time()
-        filename = 'inference_runtime_' + experiment_name + '.txt'
-        runtime_path = os.path.join(FLAGS.base_dir, filename)
-        f = open(runtime_path, 'w+')
-        f.write(experiment_name + ' took ' +
-                str(end_time - start_time) + ' seconds.')
+        f = open(inference_file, 'a+')
+        f.write(experiment_name + ', ' +
+                str(end_time - start_time) + '\n')
         f.close()
-        print("--- DOPAMINE CARTPOLE inference EXPERIMENT COMPLETED ---\n")
+        print("--- DOPAMINE CARTPOLE INFERENCE EXPERIMENT COMPLETED ---\n")
 
 
 if __name__ == '__main__':

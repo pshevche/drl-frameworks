@@ -32,15 +32,15 @@ class Tensorboard:
     def close(self):
         self.writer.close()
 
-    def log_summary(self, num_episodes_train, average_reward_train, num_episodes_eval, average_reward_eval, iteration):
+    def log_summary(self, average_reward_train, num_episodes_train, average_reward_eval, num_episodes_eval, iteration):
         summary = tf.Summary(value=[
-            tf.Summary.Value(tag='Horizon/Train/NumEpisodes',
+            tf.Summary.Value(tag='Train/NumEpisodes',
                              simple_value=num_episodes_train),
-            tf.Summary.Value(tag='Horizon/Train/AverageReturns',
+            tf.Summary.Value(tag='Train/AverageReturns',
                              simple_value=average_reward_train),
-            tf.Summary.Value(tag='Horizon/Eval/NumEpisodes',
+            tf.Summary.Value(tag='Eval/NumEpisodes',
                              simple_value=num_episodes_eval),
-            tf.Summary.Value(tag='Horizon/Eval/AverageReturns',
+            tf.Summary.Value(tag='Eval/AverageReturns',
                              simple_value=average_reward_eval)
         ])
         self.writer.add_summary(summary, iteration)
@@ -124,7 +124,7 @@ def main(args):
 
     dataset = RLDataset(args.file_path) if args.file_path else None
     start_time = time.time()
-    reward_history, test_history, timestep_history, test_episodes, eval_episodes, trainer, predictor = horizon_runner.run_gym(
+    avg_train_history, train_episodes, avg_eval_history, eval_episodes, timesteps_history, trainer, predictor = horizon_runner.run_gym(
         params,
         args.offline_train,
         args.score_bar,
@@ -136,34 +136,28 @@ def main(args):
 
     if dataset:
         dataset.save()
-    if args.evaluation_file_path:
-        write_lists_to_csv(args.evaluation_file_path,
-                           reward_history, timestep_history)
     if args.results_file_path:
         write_lists_to_csv(args.results_file_path,
-                           test_history, timestep_history)
-
+                           avg_train_history, timesteps_history)
     end_time = time.time()
 
     # save runtime to file
-    #result_file = args.results_file_path
     evaluation_file = args.evaluation_file_path
-    base_dir = evaluation_file[:evaluation_file.rfind('/')]
     config_file = args.parameters.strip()
     experiment_name = config_file[config_file.rfind(
         '/') + 1: config_file.rfind('.json')]
-    filename = 'runtime_' + experiment_name + '.txt'
-    runtime_path = os.path.join(base_dir, filename)
 
-    f = open(runtime_path, 'w+')
-    f.write(experiment_name + ' took ' +
-            str(end_time - start_time) + ' seconds.')
+    runtime_file = os.path.join(evaluation_file, 'runtime', 'runtime.csv')
+
+    f = open(runtime_file, 'a+')
+    f.write(experiment_name + ', ' +
+            str(end_time - start_time) + '\n')
     f.close()
 
-    tensorboard = Tensorboard(base_dir+"/"+experiment_name)
-    for i in range(0, len(reward_history)):
+    tensorboard = Tensorboard(os.path.join(evaluation_file, experiment_name))
+    for i in range(0, len(avg_eval_history)):
         tensorboard.log_summary(
-            test_episodes[i], test_history[i], eval_episodes[i], reward_history[i], timestep_history[i])
+            avg_train_history[i], train_episodes[i], avg_eval_history[i], eval_episodes[i], i)
     tensorboard.close()
 
     # inference testing
@@ -178,17 +172,16 @@ def main(args):
             )
             end_time = time.time()
             print("--- HORIZON CARTPOLE inference EXPERIMENT COMPLETED ---")
-            filename = 'inference_runtime_' + experiment_name + '.txt'
-            runtime_path = os.path.join(base_dir, filename)
-
-            f = open(runtime_path, 'w+')
-            f.write(experiment_name + ' took ' +
-                    str(end_time - start_time) + ' seconds.')
+            inference_file = os.path.join(
+                evaluation_file, 'runtime', 'inference.csv')
+            f = open(inference_file, 'a+')
+            f.write(experiment_name + ', ' +
+                    str(end_time - start_time) + '\n')
             f.close()
     except KeyError:
         pass
 
-    return reward_history
+    return avg_eval_history
 
 
 if __name__ == "__main__":

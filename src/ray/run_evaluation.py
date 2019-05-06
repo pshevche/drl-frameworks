@@ -87,12 +87,11 @@ def run(args, parser):
 
     experiment_name = list(experiments.keys())[0]
     results_dir = list(experiments.values())[0]['local_dir']
-    filename = 'runtime_' + experiment_name + '.txt'
-    runtime_path = os.path.join(results_dir, filename)
+    runtime_file = os.path.join(results_dir, 'runtime', 'runtime.csv')
 
-    f = open(runtime_path, 'w+')
-    f.write(experiment_name + ' took ' +
-            str(end_time - start_time) + ' seconds.')
+    f = open(runtime_file, 'a+')
+    f.write(experiment_name + ', ' +
+            str(end_time - start_time) + '\n')
     f.close()
 
 
