@@ -97,15 +97,11 @@ def run(args, parser):
         average_reward_eval.append(result["evaluation"]["episode_reward_mean"])
         eval_episodes.append(result["evaluation"]["episodes_this_iter"])
 
-        print(pretty_print(result))
-
         if iteration % checkpoint_freq == 0:
             last_checkpoint = agent.save(checkpoint_dir)
-            print("checkpoint saved at", last_checkpoint)
 
     if checkpoint_at_end:
         last_checkpoint = agent.save(checkpoint_dir)
-        print("checkpoint saved at", last_checkpoint)
     end_time = time.time()
 
     # log results to tensorboard
