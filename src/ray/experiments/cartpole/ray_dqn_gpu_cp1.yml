@@ -1,12 +1,12 @@
-dqn_cartpole_gpu_1:
+ray_dqn_gpu_cp1:
   run: DQN
   env: CartPole-v0
-  local_dir: "src/ray/results/dqn_cartpole_gpu_1"  
+  local_dir: "results/cartpole"  
   checkpoint_freq: 1
   checkpoint_at_end: True
   # number of iterations
   stop:
-    timesteps_total: 500000
+    training_iteration: 500
   # all other hyperparameters (e.g. length of one iteration)
   config:
     adam_epsilon: 0.0003125

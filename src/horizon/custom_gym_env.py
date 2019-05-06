@@ -96,15 +96,18 @@ class CustomGymEnvironment(OpenAIGymEnvironment):
                     test=False,
                     render=False,
                     state_preprocessor=None,):
+        ep_count = 0
         steps = 0
         reward_sum = 0
-        discounted_reward_sum = 0
+        avg_eval_reward = 0
         while steps < steps_count:
-            ep_reward_sum, ep_discounted_reward_sum, ep_steps = self.run_episode(
+            ep_reward_sum, _, ep_steps = self.run_episode(
                 predictor, max_steps, test, render, state_preprocessor)
+            ep_count += 1
             steps += ep_steps
             reward_sum += ep_reward_sum
-        return reward_sum, discounted_reward_sum, steps
+        avg_eval_reward = reward_sum / ep_count
+        return ep_count, avg_eval_reward
 
 
 def create_custom_env(params):

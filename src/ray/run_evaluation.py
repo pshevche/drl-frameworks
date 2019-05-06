@@ -6,93 +6,141 @@ from __future__ import print_function
 
 import argparse
 import os
+import tensorflow as tf
 import time
 import yaml
 
 import ray
-from ray.tests.cluster_utils import Cluster
 from ray.tune.config_parser import make_parser
-from ray.tune.trial import resources_to_json
-from ray.tune.tune import _make_scheduler, run_experiments
-
-from ray.rllib.train import create_parser
+from ray.rllib.agents.registry import get_agent_class
+from ray.tune.logger import pretty_print
 
 EXAMPLE_USAGE = """
 Training example via RLlib CLI:
-    rllib train --run DQN --env CartPole-v0
-
-Grid search example via RLlib CLI:
-    rllib train -f tuned_examples/cartpole-grid-search-example.yaml
-
-Grid search example via executable:
-    ./train.py -f tuned_examples/cartpole-grid-search-example.yaml
-
-Note that -f overrides all other trial-specific command-line options.
+    ./run_evaluation -f src/ray/experiments/cartpole/ray_dqn_cpu_cp1.yml
 """
 
 
+class Tensorboard:
+    def __init__(self, logdir):
+        self.writer = tf.summary.FileWriter(logdir)
+
+    def close(self):
+        self.writer.close()
+
+    def log_summary(self, average_reward_train, num_episodes_train, average_reward_eval, num_episodes_eval, iteration):
+        summary = tf.Summary(value=[
+            tf.Summary.Value(tag='Train/NumEpisodes',
+                             simple_value=num_episodes_train),
+            tf.Summary.Value(tag='Train/AverageReturns',
+                             simple_value=average_reward_train),
+            tf.Summary.Value(tag='Eval/NumEpisodes',
+                             simple_value=num_episodes_eval),
+            tf.Summary.Value(tag='Eval/AverageReturns',
+                             simple_value=average_reward_eval)
+        ])
+        self.writer.add_summary(summary, iteration)
+        self.writer.flush()
+
+
+def create_parser(parser_creator=None):
+    parser = make_parser(
+        parser_creator=parser_creator,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description="Train a reinforcement learning agent.",
+        epilog=EXAMPLE_USAGE)
+
+    # See also the base parser definition in ray/tune/config_parser.py
+    parser.add_argument(
+        "-f",
+        "--config-file",
+        default=None,
+        type=str,
+        help="If specified, use config options from this file. Note that this "
+        "overrides any trial-specific options set via flags above.")
+    return parser
+
+
 def run(args, parser):
-    if args.config_file:
-        with open(args.config_file) as f:
-            experiments = yaml.load(f)
-    else:
-        # Note: keep this in sync with tune/config_parser.py
-        experiments = {
-            args.experiment_name: {  # i.e. log to ~/ray_results/default
-                "run": args.run,
-                "checkpoint_freq": args.checkpoint_freq,
-                "local_dir": args.local_dir,
-                "resources_per_trial": (
-                    args.resources_per_trial and
-                    resources_to_json(args.resources_per_trial)),
-                "stop": args.stop,
-                "config": dict(args.config, env=args.env),
-                "restore": args.restore,
-                "num_samples": args.num_samples,
-                "upload_dir": args.upload_dir,
-            }
-        }
+    # Load configuration file
+    with open(args.config_file) as f:
+        experiments = yaml.load(f)
 
-    for exp in experiments.values():
-        if not exp.get("run"):
-            parser.error("the following arguments are required: --run")
-        if not exp.get("env") and not exp.get("config", {}).get("env"):
-            parser.error("the following arguments are required: --env")
+    # extract info about experiment
+    experiment_name = list(experiments.keys())[0]
+    experiment_info = list(experiments.values())[0]
 
-    if args.ray_num_nodes:
-        cluster = Cluster()
-        for _ in range(args.ray_num_nodes):
-            cluster.add_node(
-                num_cpus=args.ray_num_cpus or 1,
-                num_gpus=args.ray_num_gpus or 0,
-                object_store_memory=args.ray_object_store_memory,
-                redis_max_memory=args.ray_redis_max_memory)
-        ray.init(redis_address=cluster.redis_address)
-    else:
-        ray.init(
-            redis_address=args.redis_address,
-            object_store_memory=args.ray_object_store_memory,
-            redis_max_memory=args.ray_redis_max_memory,
-            num_cpus=args.ray_num_cpus,
-            num_gpus=args.ray_num_gpus)
+    agent_name = experiment_info["run"]
+    env_name = experiment_info["env"]
+    results_dir = experiment_info['local_dir']
+    checkpoint_freq = experiment_info["checkpoint_freq"]
+    checkpoint_at_end = experiment_info["checkpoint_at_end"]
+    checkpoint_dir = os.path.join(results_dir, experiment_name)
+    num_iterations = experiment_info["stop"]["training_iteration"]
+    config = experiment_info["config"]
 
-    # store runtime
+    # init training agent
+    ray.init()
+    agent_class = get_agent_class(agent_name)
+    agent = agent_class(env=env_name, config=config)
+    average_reward_train, train_episodes = [], []
+    average_reward_eval, eval_episodes = [], []
+    timesteps_history = []
+
+    # train agent
     start_time = time.time()
-    run_experiments(
-        experiments,
-        scheduler=_make_scheduler(args),
-        queue_trials=args.queue_trials,
-        resume=args.resume)
+    for iteration in range(num_iterations):
+        result = agent.train()
+        timesteps_history.append(result["timesteps_total"])
+        average_reward_train.append(result["episode_reward_mean"])
+        train_episodes.append(result["episodes_this_iter"])
+        average_reward_eval.append(result["evaluation"]["episode_reward_mean"])
+        eval_episodes.append(result["evaluation"]["episodes_this_iter"])
+
+        print(pretty_print(result))
+
+        if iteration % checkpoint_freq == 0:
+            last_checkpoint = agent.save(checkpoint_dir)
+            print("checkpoint saved at", last_checkpoint)
+
+    if checkpoint_at_end:
+        last_checkpoint = agent.save(checkpoint_dir)
+        print("checkpoint saved at", last_checkpoint)
     end_time = time.time()
 
-    experiment_name = list(experiments.keys())[0]
-    results_dir = list(experiments.values())[0]['local_dir']
-    runtime_file = os.path.join(results_dir, 'runtime', 'runtime.csv')
+    # log results to tensorboard
+    tensorboard = Tensorboard(os.path.join(results_dir, experiment_name))
+    for i in range(len(average_reward_eval)):
+        tensorboard.log_summary(average_reward_train[i], train_episodes[i],
+                                average_reward_eval[i], eval_episodes[i], i)
+    tensorboard.close()
 
+    # save runtime
+    runtime_file = os.path.join(results_dir, 'runtime', 'runtime.csv')
     f = open(runtime_file, 'a+')
     f.write(experiment_name + ', ' +
             str(end_time - start_time) + '\n')
     f.close()
+
+    # inference testing
+    try:
+        inference_steps = experiment_info["inference_steps"]
+        print("--- STARTING RAY CARTPOLE INFERENCE EXPERIMENT ---")
+        start_time = time.time()
+        steps = 0
+        while steps < inference_steps:
+            result = agent._evaluate()
+            steps += result["evaluation"]["episodes_this_iter"] * \
+                result["evaluation"]["episode_len_mean"]
+        end_time = time.time()
+        inference_file = os.path.join(results_dir, 'runtime', 'inference.csv')
+        f = open(inference_file, 'a+')
+        f.write(experiment_name + ', ' +
+                str(end_time - start_time) + '\n')
+        f.close()
+        print("--- RAY CARTPOLE INFERENCE EXPERIMENT COMPLETED ---")
+    except KeyError:
+        pass
 
 
 if __name__ == "__main__":
