@@ -28,12 +28,18 @@ class Tensorboard:
     def close(self):
         self.writer.close()
 
-    def log_summary(self, average_reward_train, num_episodes_train, average_reward_eval, num_episodes_eval, iteration):
+    def log_train_summary(self, average_reward_train, num_episodes_train, iteration):
         summary = tf.Summary(value=[
             tf.Summary.Value(tag='Train/NumEpisodes',
                              simple_value=num_episodes_train),
             tf.Summary.Value(tag='Train/AverageReturns',
                              simple_value=average_reward_train),
+        ])
+        self.writer.add_summary(summary, iteration)
+        self.writer.flush()
+
+    def log_eval_summary(self, average_reward_eval, num_episodes_eval, iteration):
+        summary = tf.Summary(value=[
             tf.Summary.Value(tag='Eval/NumEpisodes',
                              simple_value=num_episodes_eval),
             tf.Summary.Value(tag='Eval/AverageReturns',
@@ -94,8 +100,12 @@ def run(args, parser):
         timesteps_history.append(result["timesteps_total"])
         average_reward_train.append(result["episode_reward_mean"])
         train_episodes.append(result["episodes_this_iter"])
-        average_reward_eval.append(result["evaluation"]["episode_reward_mean"])
-        eval_episodes.append(result["evaluation"]["episodes_this_iter"])
+        try:
+            average_reward_eval.append(
+                result["evaluation"]["episode_reward_mean"])
+            eval_episodes.append(result["evaluation"]["episodes_this_iter"])
+        except KeyError:
+            pass
 
         if iteration % checkpoint_freq == 0:
             last_checkpoint = agent.save(checkpoint_dir)
@@ -106,9 +116,12 @@ def run(args, parser):
 
     # log results to tensorboard
     tensorboard = Tensorboard(os.path.join(results_dir, experiment_name))
+    for i in range(len(average_reward_train)):
+        tensorboard.log_train_summary(
+            average_reward_train[i], train_episodes[i], i)
     for i in range(len(average_reward_eval)):
-        tensorboard.log_summary(average_reward_train[i], train_episodes[i],
-                                average_reward_eval[i], eval_episodes[i], i)
+        tensorboard.log_train_summary(
+            average_reward_eval[i], eval_episodes[i], i)
     tensorboard.close()
 
     # save runtime

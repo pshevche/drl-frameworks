@@ -1,0 +1,15 @@
+ray_appo_cpu_cp1:
+  run: APPO
+  env: CartPole-v0
+  local_dir: "results/cartpole"  
+  checkpoint_freq: 1
+  checkpoint_at_end: True
+  # number of iterations
+  stop:
+    training_iteration: 500
+  # all other hyperparameters (e.g. length of one iteration)
+  config:
+    epsilon: 0.0003125
+    lr: 0.001
+    num_workers: 1
+    train_batch_size: 128
