@@ -1,5 +1,5 @@
-ray_dqn_gpu_cp1:
-  run: DQN
+ray_apex_cpu_3cp1:
+  run: APEX
   env: CartPole-v0
   local_dir: "results/cartpole"  
   checkpoint_freq: 1
@@ -16,9 +16,8 @@ ray_dqn_gpu_cp1:
     evaluation_interval: 1
     evaluation_num_episodes: 100
     lr: 0.001
-    num_cpus_for_driver: 0
-    num_gpus: 1
-    num_workers: 0
+    num_cpus_per_worker: 1
+    num_workers: 2
     output: "logdir"
     prioritized_replay: False
     timesteps_per_iteration: 1000

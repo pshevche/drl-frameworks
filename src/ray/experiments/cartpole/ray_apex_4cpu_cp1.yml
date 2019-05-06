@@ -1,5 +1,5 @@
-ray_dqn_4cpu_cp1:
-  run: DQN
+ray_apex_4cpu_cp1:
+  run: APEX
   env: CartPole-v0
   local_dir: "results/cartpole"  
   checkpoint_freq: 1
