@@ -71,18 +71,18 @@ def main(unused_argv):
             str(end_time - start_time) + ' seconds.')
     f.close()
 
-    if runner.propagation_steps:
-        print("--- STARTING DOPAMINE CARTPOLE PROPAGATION EXPERIMENT ---\n")
+    if runner.inference_steps:
+        print("--- STARTING DOPAMINE CARTPOLE inference EXPERIMENT ---\n")
         start_time = time.time()
-        runner.run_propagation_test()
+        runner.run_inference_test()
         end_time = time.time()
-        filename = 'propagation_runtime_' + experiment_name + '.txt'
+        filename = 'inference_runtime_' + experiment_name + '.txt'
         runtime_path = os.path.join(FLAGS.base_dir, filename)
         f = open(runtime_path, 'w+')
         f.write(experiment_name + ' took ' +
                 str(end_time - start_time) + ' seconds.')
         f.close()
-        print("--- DOPAMINE CARTPOLE PROPAGATION EXPERIMENT COMPLETED ---\n")
+        print("--- DOPAMINE CARTPOLE inference EXPERIMENT COMPLETED ---\n")
 
 
 if __name__ == '__main__':

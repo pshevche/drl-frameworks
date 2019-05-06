@@ -5,6 +5,6 @@
 2. Check Anaconda's version by executing `conda -V`. If Anaconda's version is `<=4.6.8`, run `conda update conda`.
 3. Create Anaconda environments by running `./scripts/create_env.sh`.
 4. Run experiments by executing `./scripts/evaluate.sh`.
-5. **Note**: Ray propagation test has to be run separately by execution `run_propagation_test.py`.
+5. **Note**: Ray inference test has to be run separately by execution `run_inference_test.py`.
 
 [miniconda]: https://docs.conda.io/en/latest/miniconda.html

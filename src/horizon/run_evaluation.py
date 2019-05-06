@@ -24,6 +24,7 @@ USE_CPU = -1
 logger = logging.getLogger(__name__)
 horizon_runner.train = custom_train
 
+
 class Tensorboard:
     def __init__(self, logdir):
         self.writer = tf.summary.FileWriter(logdir)
@@ -33,17 +34,18 @@ class Tensorboard:
 
     def log_summary(self, num_episodes_train, average_reward_train, num_episodes_eval, average_reward_eval, iteration):
         summary = tf.Summary(value=[
-        tf.Summary.Value(tag='Horizon/Train/NumEpisodes',
-                         simple_value=num_episodes_train),
-        tf.Summary.Value(tag='Horizon/Train/AverageReturns',
-                         simple_value=average_reward_train),
-        tf.Summary.Value(tag='Horizon/Eval/NumEpisodes',
-                         simple_value=num_episodes_eval),
-        tf.Summary.Value(tag='Horizon/Eval/AverageReturns',
-                         simple_value=average_reward_eval)
+            tf.Summary.Value(tag='Horizon/Train/NumEpisodes',
+                             simple_value=num_episodes_train),
+            tf.Summary.Value(tag='Horizon/Train/AverageReturns',
+                             simple_value=average_reward_train),
+            tf.Summary.Value(tag='Horizon/Eval/NumEpisodes',
+                             simple_value=num_episodes_eval),
+            tf.Summary.Value(tag='Horizon/Eval/AverageReturns',
+                             simple_value=average_reward_eval)
         ])
         self.writer.add_summary(summary, iteration)
-        self.writer.flush()                
+        self.writer.flush()
+
 
 def main(args):
     parser = argparse.ArgumentParser(
@@ -143,7 +145,6 @@ def main(args):
 
     end_time = time.time()
 
-
     # save runtime to file
     #result_file = args.results_file_path
     evaluation_file = args.evaluation_file_path
@@ -158,26 +159,26 @@ def main(args):
     f.write(experiment_name + ' took ' +
             str(end_time - start_time) + ' seconds.')
     f.close()
-    
+
     tensorboard = Tensorboard(base_dir+"/"+experiment_name)
-    for i in range(0,len(reward_history)):
-      tensorboard.log_summary(test_episodes[i], test_history[i],eval_episodes[i], reward_history[i], timestep_history[i])
+    for i in range(0, len(reward_history)):
+        tensorboard.log_summary(
+            test_episodes[i], test_history[i], eval_episodes[i], reward_history[i], timestep_history[i])
     tensorboard.close()
 
-
-    # propagation testing
+    # inference testing
     try:
-        num_propagation_steps = params["run_details"]["num_propagation_steps"]
-        if num_propagation_steps:
-            print("--- STARTING HORIZON CARTPOLE PROPAGATION EXPERIMENT ---")
+        num_inference_steps = params["run_details"]["num_inference_steps"]
+        if num_inference_steps:
+            print("--- STARTING HORIZON CARTPOLE inference EXPERIMENT ---")
             env = create_custom_env(params)
             start_time = time.time()
             _ = env.run_n_steps(
-                num_propagation_steps, predictor, test=True
+                num_inference_steps, predictor, test=True
             )
             end_time = time.time()
-            print("--- HORIZON CARTPOLE PROPAGATION EXPERIMENT COMPLETED ---")
-            filename = 'propagation_runtime_' + experiment_name + '.txt'
+            print("--- HORIZON CARTPOLE inference EXPERIMENT COMPLETED ---")
+            filename = 'inference_runtime_' + experiment_name + '.txt'
             runtime_path = os.path.join(base_dir, filename)
 
             f = open(runtime_path, 'w+')

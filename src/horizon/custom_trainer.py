@@ -40,7 +40,7 @@ def custom_train(
     path_to_pickled_transitions=None,
     timesteps_total=1000,
     checkpoint_after_ts=1,
-    num_propagation_steps=None
+    num_inference_steps=None
 ):
     if offline_train:
         return horizon_runner.train_gym_offline_rl(

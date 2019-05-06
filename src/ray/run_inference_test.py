@@ -19,7 +19,7 @@ from ray.rllib.rollout import rollout
 
 EXAMPLE_USAGE = """
 Example Usage:
-    python src/ray/run_propagation_test.py --checkpoint=src/ray/results/dqn_cartpole_cpu_1/dqn_cartpole_cpu_1/DQN_CartPole-v0_0_2019-05-03_13-40-44mqad943p/src/ray/results/dqn_cartpole_cpu_1/dqn_cartpole_cpu_1/DQN_CartPole-v0_0_2019-05-03_13-40-44mqad943p/checkpoint_1/checkpoint-1 -f=src/ray/experiments/cartpole/dqn_cartpole_cpu_1.yml --steps=500000
+    python src/ray/run_inference_test.py --checkpoint=src/ray/results/dqn_cartpole_cpu_1/dqn_cartpole_cpu_1/DQN_CartPole-v0_0_2019-05-03_13-40-44mqad943p/src/ray/results/dqn_cartpole_cpu_1/dqn_cartpole_cpu_1/DQN_CartPole-v0_0_2019-05-03_13-40-44mqad943p/checkpoint_1/checkpoint-1 -f=src/ray/experiments/cartpole/dqn_cartpole_cpu_1.yml --steps=500000
 """
 
 
@@ -47,7 +47,7 @@ def create_parser(parser_creator=None):
 
 
 def run(args, parser):
-    print("--- STARTING RAY CARTPOLE PROPAGATION EXPERIMENT ---\n")
+    print("--- STARTING RAY CARTPOLE inference EXPERIMENT ---\n")
     # Load configuration from file
     with open(args.config_file) as f:
         experiments = yaml.load(f)
@@ -68,14 +68,14 @@ def run(args, parser):
     rollout(agent, env_name, num_steps)
     end_time = time.time()
 
-    filename = 'propagation_runtime_' + experiment_name + '.txt'
+    filename = 'inference_runtime_' + experiment_name + '.txt'
     runtime_path = os.path.join(results_dir, filename)
 
     f = open(runtime_path, 'w+')
     f.write(experiment_name + ' took ' +
-            str(end_time - start_time) + ' seconds for propagation.')
+            str(end_time - start_time) + ' seconds for inference.')
     f.close()
-    print("--- RAY CARTPOLE PROPAGATION EXPERIMENT COMPLETED ---\n")
+    print("--- RAY CARTPOLE inference EXPERIMENT COMPLETED ---\n")
 
 
 if __name__ == "__main__":

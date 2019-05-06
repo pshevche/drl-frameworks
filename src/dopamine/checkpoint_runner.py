@@ -25,7 +25,7 @@ class CheckpointRunner(run_experiment.Runner):
                  training_steps=250000,
                  evaluation_steps=125000,
                  max_steps_per_episode=27000,
-                 propagation_steps=None):
+                 inference_steps=None):
         super(CheckpointRunner, self).__init__(base_dir,
                                                create_agent_fn,
                                                create_environment_fn,
@@ -38,7 +38,7 @@ class CheckpointRunner(run_experiment.Runner):
                                                max_steps_per_episode)
         self.checkpoint_freq = checkpoint_freq
         self.current_checkpoint = 0
-        self.propagation_steps = propagation_steps
+        self.inference_steps = inference_steps
 
     def run_experiment(self):
         """Runs a full experiment, spread over multiple iterations."""
@@ -72,10 +72,10 @@ class CheckpointRunner(run_experiment.Runner):
                 self.current_checkpoint, experiment_data)
             self.current_checkpoint = self.current_checkpoint + 1
 
-    def run_propagation_test(self):
+    def run_inference_test(self):
         statistics = iteration_statistics.IterationStatistics()
         _ = self._run_one_phase(
-            self.propagation_steps, statistics, 'eval')
+            self.inference_steps, statistics, 'eval')
 
 
 def create_runner(base_dir):
