@@ -14,7 +14,7 @@ from custom_gym_env import create_custom_env
 
 from Horizon.ml.rl.training.rl_dataset import RLDataset
 from Horizon.ml.rl.test.gym import run_gym as horizon_runner
-from Horizon.ml.rl.test.utils import write_lists_to_csv
+from Horizon.ml.rl.test.base.utils import write_lists_to_csv
 from Horizon.ml.rl.test.gym.open_ai_gym_environment import (
     OpenAIGymEnvironment,
 )

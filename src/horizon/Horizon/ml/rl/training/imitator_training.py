@@ -18,6 +18,7 @@ class ImitatorTrainer(RLTrainer):
     ) -> None:
         self._set_optimizer(parameters.training.optimizer)
         self.minibatch_size = parameters.training.minibatch_size
+        self.minibatches_per_step = parameters.training.minibatches_per_step or 1
         self.imitator = imitator
         self.imitator_optimizer = self.optimizer_func(
             imitator.parameters(),
@@ -46,17 +47,24 @@ class ImitatorTrainer(RLTrainer):
         if train:
             imitator_loss = torch.nn.CrossEntropyLoss()
             bcq_loss = imitator_loss(action_preds, actual_action_idxs)
-            self.imitator_optimizer.zero_grad()
             bcq_loss.backward()
-            self.imitator_optimizer.step()
+            self._maybe_run_optimizer(
+                self.imitator_optimizer, self.minibatches_per_step
+            )
 
         return self._imitator_accuracy(pred_action_idxs, actual_action_idxs)
 
 
 def get_valid_actions_from_imitator(imitator, input, drop_threshold):
     """Create mask for non-viable actions under the imitator."""
-    imitator_outputs = imitator(input)
-    on_policy_action_probs = torch.nn.functional.softmax(imitator_outputs, dim=1)
+    if isinstance(imitator, torch.nn.Module):
+        # pytorch model
+        imitator_outputs = imitator(input)
+        on_policy_action_probs = torch.nn.functional.softmax(imitator_outputs, dim=1)
+    else:
+        # sci-kit learn model
+        on_policy_action_probs = torch.tensor(imitator(input.cpu()))
+
     filter_values = (
         on_policy_action_probs / on_policy_action_probs.max(keepdim=True, dim=1)[0]
     )
