@@ -43,6 +43,6 @@
         "avg_over_num_episodes": 100,
         "offline_train_epochs": 30,
         "timesteps_total": 500000,
-        "checkpoint_after_ts": 1000
+        "checkpoint_after_ts": 500000
     }
 }
