@@ -4,7 +4,7 @@ ray_apex_cpu_cp1:
   local_dir: "results/cartpole"  
   checkpoint_freq: 1
   checkpoint_at_end: True
-  inference_steps: 3000
+  inference_steps: 500000
   # number of iterations
   stop:
     training_iteration: 500
