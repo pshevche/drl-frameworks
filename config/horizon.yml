@@ -104,4 +104,5 @@ dependencies:
     - torchvision==0.2.2.post3
     - typing==3.6.6
     - typing-extensions==3.7.2
+    - sklearn
 
