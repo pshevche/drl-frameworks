@@ -115,7 +115,7 @@ class RLDataset:
         """
         state = state.tolist()
         action = timeline_format_action
-        if possible_actions:
+        if possible_actions.all():
             possible_actions = possible_actions.tolist()
         else:
             possible_actions = possible_actions_mask
