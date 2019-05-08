@@ -46,7 +46,8 @@ class OpenAIGymMemoryPool:
         cols = [[], [], [], [], [], [], [], [], [], [], [], []]
 
         if chunk is None:
-            indices = np.random.permutation(len(self.replay_memory))[:batch_size]
+            indices = np.random.permutation(
+                len(self.replay_memory))[:batch_size]
         else:
             start_idx = chunk * batch_size
             end_idx = start_idx + batch_size
@@ -66,14 +67,15 @@ class OpenAIGymMemoryPool:
             actions = torch.tensor(cols[1], dtype=torch.float32)
             possible_actions = []
             for pa_matrix in cols[8]:
-                logger.info("PA" + str(pa_matrix))
+                # logger.info("PA" + str(pa_matrix))
                 for row in pa_matrix:
                     possible_actions.append(row)
 
             tiled_states = states.repeat(1, num_possible_actions).reshape(
                 -1, states.shape[1]
             )
-            possible_actions = torch.tensor(possible_actions, dtype=torch.float32)
+            possible_actions = torch.tensor(
+                possible_actions, dtype=torch.float32)
             possible_actions_state_concat = torch.cat(
                 (tiled_states, possible_actions), dim=1
             )
@@ -83,7 +85,7 @@ class OpenAIGymMemoryPool:
             possible_next_actions = []
             for pna_matrix in cols[6]:
                 for row in pna_matrix:
-                    logger.info("PNA" + str(row))
+                    # logger.info("PNA" + str(row))
                     possible_next_actions.append(row)
 
             tiled_next_states = next_states.repeat(1, num_possible_actions).reshape(
@@ -96,7 +98,8 @@ class OpenAIGymMemoryPool:
             possible_next_actions_state_concat = torch.cat(
                 (tiled_next_states, possible_next_actions), dim=1
             )
-            possible_next_actions_mask = torch.tensor(cols[7], dtype=torch.float32)
+            possible_next_actions_mask = torch.tensor(
+                cols[7], dtype=torch.float32)
         else:
             possible_actions = None
             possible_actions_state_concat = None
@@ -105,11 +108,13 @@ class OpenAIGymMemoryPool:
             if cols[7] is None or cols[7][0] is None:
                 possible_next_actions_mask = None
             else:
-                possible_next_actions_mask = torch.tensor(cols[7], dtype=torch.float32)
+                possible_next_actions_mask = torch.tensor(
+                    cols[7], dtype=torch.float32)
             if cols[9] is None or cols[9][0] is None:
                 possible_actions_mask = None
             else:
-                possible_actions_mask = torch.tensor(cols[9], dtype=torch.float32)
+                possible_actions_mask = torch.tensor(
+                    cols[9], dtype=torch.float32)
 
             actions = torch.tensor(cols[1], dtype=torch.float32)
             next_actions = torch.tensor(cols[4], dtype=torch.float32)
@@ -122,9 +127,11 @@ class OpenAIGymMemoryPool:
             next_states=next_states,
             next_actions=next_actions,
             not_terminal=torch.from_numpy(
-                np.logical_not(np.array(cols[5]), dtype=np.bool).astype(np.int32)
+                np.logical_not(np.array(cols[5]),
+                               dtype=np.bool).astype(np.int32)
             ).reshape(-1, 1),
-            time_diffs=torch.tensor(cols[10], dtype=torch.int32).reshape(-1, 1),
+            time_diffs=torch.tensor(
+                cols[10], dtype=torch.int32).reshape(-1, 1),
             possible_actions_mask=possible_actions_mask,
             possible_actions_state_concat=possible_actions_state_concat,
             possible_next_actions_mask=possible_next_actions_mask,
