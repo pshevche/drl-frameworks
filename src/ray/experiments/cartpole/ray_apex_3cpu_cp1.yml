@@ -1,4 +1,4 @@
-ray_apex_cpu_3cp1:
+ray_apex_3cpu_cp1:
   run: APEX
   env: CartPole-v0
   local_dir: "results/cartpole"  

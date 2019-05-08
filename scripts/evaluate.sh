@@ -47,7 +47,7 @@ for fullfile in src/horizon/experiments/cartpole/gpu/*.json; do
     experiment="${filename%.*}"
     echo "--- STARTING EXPERIMENT ${experiment} --- "
     mkdir -p results/cartpole/${experiment}
-    python src/horizon/run_evaluation.py -g 0 -p src/horizon/experiments/cartpole/cpu/${experiment}.json -f results/cartpole/${experiment}/checkpoints.json -v results/cartpole/
+    python src/horizon/run_evaluation.py -g 0 -p src/horizon/experiments/cartpole/gpu/${experiment}.json -f results/cartpole/${experiment}/checkpoints.json -v results/cartpole/
     echo "--- EXPERIMENT ${experiment} COMPLETED --- "
     echo
 done
