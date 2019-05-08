@@ -5,9 +5,9 @@
     "use_gpu": true,
     "rl": {
         "gamma": 0.99,
-        "target_update_rate": 0.002,
+        "target_update_rate": 0.1,
         "maxq_learning": 1,
-        "epsilon": 0.2,
+        "epsilon": 0.0003125,
         "temperature": 0.35,
         "softmax_policy": 0
     },
@@ -25,20 +25,21 @@
             "relu",
             "linear"
         ],
-        "minibatch_size": 64,
-        "learning_rate": 0.001,
+        "minibatch_size": 128,
+        "learning_rate": 0.09,
         "optimizer": "ADAM",
         "lr_decay": 0.999
     },
     "run_details": {
-        "num_episodes": 1000000000,
+        "num_episodes": 1000000,
         "max_steps": 200,
-        "train_every_ts": 1000,
+        "train_every_ts": 1,
         "train_after_ts": 1,
         "test_every_ts": 1000,
         "test_after_ts": 1,
         "num_train_batches": 1,
         "avg_over_num_episodes": 100,
+        "avg_over_num_steps": 1000,
         "offline_train_epochs": 30,
         "timesteps_total": 500000,
         "checkpoint_after_ts": 1000

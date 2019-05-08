@@ -68,7 +68,8 @@ class OpenAIGymEnvironment(Environment):
         if not self.img:
             self.state_features = [str(sf) for sf in range(self.state_dim)]
         if self.action_type == EnvType.DISCRETE_ACTION:
-            self.actions = [str(a + self.state_dim) for a in range(self.action_dim)]
+            self.actions = [str(a + self.state_dim)
+                            for a in range(self.action_dim)]
 
     def decay_epsilon(self):
         self.epsilon *= self.epsilon_decay
@@ -178,7 +179,8 @@ class OpenAIGymEnvironment(Environment):
                 state=None, use_continuous_action=False
             )
             if self.action_type == EnvType.DISCRETE_ACTION:
-                action: np.ndarray = np.zeros([self.action_dim], dtype=np.float32)
+                action: np.ndarray = np.zeros(
+                    [self.action_dim], dtype=np.float32)
                 action[raw_action] = 1
                 return action, action_probability
             return raw_action, action_probability
@@ -221,7 +223,8 @@ class OpenAIGymEnvironment(Environment):
             # assumes state preprocessor already part of predictor net.
             sparse_next_states = predictor.in_order_dense_to_sparse(next_state)
             q_values = predictor.predict(sparse_next_states)
-            action_idx = int(max(q_values[0], key=q_values[0].get)) - self.state_dim
+            action_idx = int(
+                max(q_values[0], key=q_values[0].get)) - self.state_dim
             action[action_idx] = 1.0
             return action, action_probability
         elif isinstance(predictor, ParametricDQNPredictor):
@@ -291,7 +294,7 @@ class OpenAIGymEnvironment(Environment):
         reward_sum = 0.0
         discounted_reward_sum = 0.0
         for _ in range(n):
-            ep_rew_sum, ep_raw_discounted_sum = self.run_episode(
+            ep_rew_sum, ep_raw_discounted_sum, _ = self.run_episode(
                 predictor, max_steps, test, render, state_preprocessor
             )
             reward_sum += ep_rew_sum
@@ -327,7 +330,8 @@ class OpenAIGymEnvironment(Environment):
         """
         terminal = False
         next_state = self.transform_state(self.env.reset())
-        next_action, _ = self.policy(predictor, next_state, test, state_preprocessor)
+        next_action, _ = self.policy(
+            predictor, next_state, test, state_preprocessor)
         reward_sum = 0
         discounted_reward_sum = 0
         num_steps_taken = 0
@@ -349,13 +353,34 @@ class OpenAIGymEnvironment(Environment):
                 predictor, next_state, test, state_preprocessor
             )
             reward_sum += reward
-            discounted_reward_sum += reward * self.gamma ** (num_steps_taken - 1)
+            discounted_reward_sum += reward * \
+                self.gamma ** (num_steps_taken - 1)
 
             if max_steps and num_steps_taken >= max_steps:
                 break
 
         self.env.reset()
-        return reward_sum, discounted_reward_sum
+        return reward_sum, discounted_reward_sum, num_steps_taken
+
+    def run_n_steps(self,
+                    steps_count,
+                    predictor: Union[RLPredictor, GymPredictor, None],
+                    max_steps=None,
+                    test=False,
+                    render=False,
+                    state_preprocessor=None,):
+        ep_count = 0
+        steps = 0
+        reward_sum = 0
+        avg_eval_reward = 0
+        while steps < steps_count:
+            ep_reward_sum, _, ep_steps = self.run_episode(
+                predictor, max_steps, test, render, state_preprocessor)
+            ep_count += 1
+            steps += ep_steps
+            reward_sum += ep_reward_sum
+        avg_eval_reward = reward_sum / ep_count
+        return ep_count, avg_eval_reward
 
     def _process_state(self, raw_state):
         processed_state = {}
@@ -384,7 +409,8 @@ class OpenAIGymEnvironment(Environment):
             range_each_dim = (
                 self.env.observation_space.high - self.env.observation_space.low
             )
-            action_probability = 1.0 / reduce((lambda x, y: x * y), range_each_dim)
+            action_probability = 1.0 / \
+                reduce((lambda x, y: x * y), range_each_dim)
             action_vec = {}
             for i in range(self.action_dim):
                 action_vec[self.state_dim + i] = raw_action[i]
