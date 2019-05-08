@@ -235,7 +235,7 @@ def custom_train_gym_online_rl(
                 average_reward_train.append(avg_train_reward)
                 num_episodes_train.append(len(reward_hist))
                 average_reward_eval.append(avg_rewards)
-                num_episodes_eval.append(avg_over_num_episodes)
+                num_episodes_eval.append(avg_ep_count)
 
                 logger.info(
                     "Achieved an average reward score of {} over {} evaluations."
@@ -280,7 +280,7 @@ def custom_train_gym_online_rl(
             average_reward_train.append(avg_train_reward)
             num_episodes_train.append(len(reward_hist))
             average_reward_eval.append(avg_rewards)
-            num_episodes_eval.append(avg_over_num_episodes)
+            num_episodes_eval.append(avg_ep_count)
 
             logger.info(
                 "Achieved an average reward score of {} over {} evaluations."
