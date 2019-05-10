@@ -104,6 +104,10 @@ def run(args, parser):
             average_reward_eval.append(
                 result["evaluation"]["episode_reward_mean"])
             eval_episodes.append(result["evaluation"]["episodes_this_iter"])
+            avg_eval_ep_len = result["evaluation"]["episode_len_mean"]
+            new_eval_num_ep = int(
+                agent.config["timesteps_per_iteration"] // avg_eval_ep_len)
+            agent.config["evaluation_num_episodes"] = new_eval_num_ep
         except KeyError:
             pass
 
