@@ -13,10 +13,8 @@ ray_dqn_cpu_cp10:
     buffer_size: 50000
     dueling: False
     double_q: False
-    # we want to evaluate manually
+    # we want to evaluate manually, but still need the evaluator
     evaluation_interval: 1000000
-    # leave it 1 for proper counting of evaluation steps
-    evaluation_num_episodes: 1
     lr: 0.001
     num_workers: 0
     prioritized_replay: False

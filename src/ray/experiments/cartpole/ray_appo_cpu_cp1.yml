@@ -4,12 +4,18 @@ ray_appo_cpu_cp1:
   local_dir: "results/cartpole"  
   checkpoint_freq: 1
   checkpoint_at_end: True
+  appo_timesteps_per_iteration: 1000
   # number of iterations
   stop:
     training_iteration: 500
   # all other hyperparameters (e.g. length of one iteration)
   config:
+    # is possible with last commits
+    # evaluation_interval: 1
+    # evaluation_num_episodes: 1
     epsilon: 0.0003125
     lr: 0.001
+    num_cpus_for_driver: 0
+    num_cpus_per_worker: 1
     num_workers: 1
     train_batch_size: 128

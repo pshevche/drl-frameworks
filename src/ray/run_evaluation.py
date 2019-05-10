@@ -12,8 +12,8 @@ import yaml
 
 import ray
 from ray.tune.config_parser import make_parser
-from ray.rllib.agents.registry import get_agent_class
-from ray.tune.logger import pretty_print
+
+from custom_trainer import get_agent_class
 
 EXAMPLE_USAGE = """
 Training example via RLlib CLI:
@@ -62,21 +62,6 @@ def create_parser(parser_creator=None):
     return parser
 
 
-def evaluate_agent(agent, max_steps):
-    """ Evaluate agent over max_steps.
-    Note: requires agent.config["evaluation_num_episodes"] == 1 to work properly.
-    """
-    ep_count = 0
-    rew_sum = 0
-    steps = 0
-    while steps < max_steps:
-        eval_result = agent._evaluate()["evaluation"]
-        ep_count += 1
-        rew_sum += eval_result["episode_reward_mean"]
-        steps += eval_result["episode_len_mean"]
-    return rew_sum / ep_count, ep_count
-
-
 def run(args, parser):
     # Load configuration file
     with open(args.config_file) as f:
@@ -99,23 +84,26 @@ def run(args, parser):
     ray.init()
     agent_class = get_agent_class(agent_name)
     agent = agent_class(env=env_name, config=config)
+    if agent_name == 'APPO':
+        agent.set_timesteps_per_iteration(
+            experiment_info["appo_timesteps_per_iteration"])
     average_reward_train, train_episodes = [], []
     average_reward_eval, eval_episodes = [], []
     timesteps_history = []
 
     start_time = time.time()
     for iteration in range(num_iterations):
-        # train agent
+            # train agent
         train_result = agent.train()
         timesteps_history.append(train_result["timesteps_total"])
         average_reward_train.append(train_result["episode_reward_mean"])
         train_episodes.append(train_result["episodes_this_iter"])
 
         # evaluate agent
-        avg_eval_rew, eval_ep_count = evaluate_agent(
-            agent, config["timesteps_per_iteration"])
-        average_reward_eval.append(avg_eval_rew)
-        eval_episodes.append(eval_ep_count)
+        eval_result = agent._evaluate()
+        average_reward_eval.append(
+            eval_result["evaluation"]["episode_reward_mean"])
+        eval_episodes.append(eval_result["evaluation"]["episodes_this_iter"])
 
         # checkpoint agent's state
         if iteration % checkpoint_freq == 0:
@@ -145,7 +133,7 @@ def run(args, parser):
         inference_steps = experiment_info["inference_steps"]
         print("--- STARTING RAY CARTPOLE INFERENCE EXPERIMENT ---")
         start_time = time.time()
-        evaluate_agent(agent, inference_steps)
+        agent._evaluate()
         end_time = time.time()
         inference_file = os.path.join(results_dir, 'runtime', 'inference.csv')
         f = open(inference_file, 'a+')
