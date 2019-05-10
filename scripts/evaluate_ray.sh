@@ -16,5 +16,6 @@ for fullfile in src/ray/experiments/cartpole/*.yml; do
 done
 echo "--- RAY CARTPOLE EXPERIMENTS COMPLETED ---"
 echo
+rm -rf ~/ray_results
 echo "--- RAY EXPERIMENTS COMPLETED ---"
 echo

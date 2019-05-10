@@ -12,9 +12,11 @@ ray_dqn_cpu_cp100:
     adam_epsilon: 0.0003125
     buffer_size: 50000
     dueling: False
-    double_q: False 
-    evaluation_interval: 1
-    evaluation_num_episodes: 100
+    double_q: False
+    # we want to evaluate manually
+    evaluation_interval: 1000000
+    # leave it 1 for proper counting of evaluation steps
+    evaluation_num_episodes: 1
     lr: 0.001
     num_workers: 0
     prioritized_replay: False

@@ -13,8 +13,10 @@ ray_dqn_gpu_cp1:
     buffer_size: 50000
     dueling: False
     double_q: False 
-    evaluation_interval: 1
-    evaluation_num_episodes: 100
+    # we want to evaluate manually
+    evaluation_interval: 1000000
+    # leave it 1 for proper counting of evaluation steps
+    evaluation_num_episodes: 1
     lr: 0.001
     num_cpus_for_driver: 0
     num_gpus: 1

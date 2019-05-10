@@ -28,18 +28,12 @@ class Tensorboard:
     def close(self):
         self.writer.close()
 
-    def log_train_summary(self, average_reward_train, num_episodes_train, iteration):
+    def log_summary(self, average_reward_train, num_episodes_train, average_reward_eval, num_episodes_eval, iteration):
         summary = tf.Summary(value=[
             tf.Summary.Value(tag='Train/NumEpisodes',
                              simple_value=num_episodes_train),
             tf.Summary.Value(tag='Train/AverageReturns',
                              simple_value=average_reward_train),
-        ])
-        self.writer.add_summary(summary, iteration)
-        self.writer.flush()
-
-    def log_eval_summary(self, average_reward_eval, num_episodes_eval, iteration):
-        summary = tf.Summary(value=[
             tf.Summary.Value(tag='Eval/NumEpisodes',
                              simple_value=num_episodes_eval),
             tf.Summary.Value(tag='Eval/AverageReturns',
@@ -50,6 +44,7 @@ class Tensorboard:
 
 
 def create_parser(parser_creator=None):
+    """ Creates argument parser."""
     parser = make_parser(
         parser_creator=parser_creator,
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -65,6 +60,21 @@ def create_parser(parser_creator=None):
         help="If specified, use config options from this file. Note that this "
         "overrides any trial-specific options set via flags above.")
     return parser
+
+
+def evaluate_agent(agent, max_steps):
+    """ Evaluate agent over max_steps.
+    Note: requires agent.config["evaluation_num_episodes"] == 1 to work properly.
+    """
+    ep_count = 0
+    rew_sum = 0
+    steps = 0
+    while steps < max_steps:
+        eval_result = agent._evaluate()["evaluation"]
+        ep_count += 1
+        rew_sum += eval_result["episode_reward_mean"]
+        steps += eval_result["episode_len_mean"]
+    return rew_sum / ep_count, ep_count
 
 
 def run(args, parser):
@@ -93,39 +103,34 @@ def run(args, parser):
     average_reward_eval, eval_episodes = [], []
     timesteps_history = []
 
-    # train agent
     start_time = time.time()
     for iteration in range(num_iterations):
-        result = agent.train()
-        timesteps_history.append(result["timesteps_total"])
-        average_reward_train.append(result["episode_reward_mean"])
-        train_episodes.append(result["episodes_this_iter"])
-        try:
-            average_reward_eval.append(
-                result["evaluation"]["episode_reward_mean"])
-            eval_episodes.append(result["evaluation"]["episodes_this_iter"])
-            avg_eval_ep_len = result["evaluation"]["episode_len_mean"]
-            new_eval_num_ep = int(
-                agent.config["timesteps_per_iteration"] // avg_eval_ep_len)
-            agent.config["evaluation_num_episodes"] = new_eval_num_ep
-        except KeyError:
-            pass
+        # train agent
+        train_result = agent.train()
+        timesteps_history.append(train_result["timesteps_total"])
+        average_reward_train.append(train_result["episode_reward_mean"])
+        train_episodes.append(train_result["episodes_this_iter"])
 
+        # evaluate agent
+        avg_eval_rew, eval_ep_count = evaluate_agent(
+            agent, config["timesteps_per_iteration"])
+        average_reward_eval.append(avg_eval_rew)
+        eval_episodes.append(eval_ep_count)
+
+        # checkpoint agent's state
         if iteration % checkpoint_freq == 0:
-            last_checkpoint = agent.save(checkpoint_dir)
+            agent.save(checkpoint_dir)
 
+    # checkpoint agent's last state
     if checkpoint_at_end:
-        last_checkpoint = agent.save(checkpoint_dir)
+        agent.save(checkpoint_dir)
     end_time = time.time()
 
     # log results to tensorboard
     tensorboard = Tensorboard(os.path.join(results_dir, experiment_name))
-    for i in range(len(average_reward_train)):
-        tensorboard.log_train_summary(
-            average_reward_train[i], train_episodes[i], i)
     for i in range(len(average_reward_eval)):
-        tensorboard.log_train_summary(
-            average_reward_eval[i], eval_episodes[i], i)
+        tensorboard.log_summary(
+            average_reward_train[i], train_episodes[i], average_reward_eval[i], eval_episodes[i], i)
     tensorboard.close()
 
     # save runtime
@@ -140,11 +145,7 @@ def run(args, parser):
         inference_steps = experiment_info["inference_steps"]
         print("--- STARTING RAY CARTPOLE INFERENCE EXPERIMENT ---")
         start_time = time.time()
-        steps = 0
-        while steps < inference_steps:
-            result = agent._evaluate()
-            steps += result["evaluation"]["episodes_this_iter"] * \
-                result["evaluation"]["episode_len_mean"]
+        evaluate_agent(agent, inference_steps)
         end_time = time.time()
         inference_file = os.path.join(results_dir, 'runtime', 'inference.csv')
         f = open(inference_file, 'a+')
