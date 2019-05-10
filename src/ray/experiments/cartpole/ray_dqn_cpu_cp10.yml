@@ -1,8 +1,8 @@
-ray_apex_cpu_cp100:
-  run: APEX
+ray_dqn_cpu_cp10:
+  run: DQN
   env: CartPole-v0
   local_dir: "results/cartpole"  
-  checkpoint_freq: 100
+  checkpoint_freq: 10
   checkpoint_at_end: True
   # number of iterations
   stop:
@@ -16,8 +16,7 @@ ray_apex_cpu_cp100:
     evaluation_interval: 1
     evaluation_num_episodes: 100
     lr: 0.001
-    num_workers: 2
-    output: "logdir"
+    num_workers: 0
     prioritized_replay: False
     timesteps_per_iteration: 1000
     train_batch_size: 128

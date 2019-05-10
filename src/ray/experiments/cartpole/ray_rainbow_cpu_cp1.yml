@@ -25,7 +25,6 @@ ray_rainbow_cpu_cp1:
     num_atoms: 51
     num_workers: 0
     n_step: 3
-    output: "logdir"
     prioritized_replay: True
     prioritized_replay_alpha: 0.5
     sample_batch_size: 4
