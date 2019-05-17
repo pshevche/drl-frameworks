@@ -2,8 +2,8 @@ import logging
 import numpy as np
 import io
 
-from Horizon.ml.rl.test.gym import run_gym as horizon_runner
-from Horizon.ml.rl.test.gym.open_ai_gym_environment import (
+from ml.rl.test.gym import run_gym as horizon_runner
+from ml.rl.test.gym.open_ai_gym_environment import (
     EnvType,
     ModelType,
     OpenAIGymEnvironment,

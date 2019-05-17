@@ -10,14 +10,13 @@ import tensorflow as tf
 import io
 
 from custom_trainer import custom_train
-
-from Horizon.ml.rl.training.rl_dataset import RLDataset
-from Horizon.ml.rl.test.gym import run_gym as horizon_runner
-from Horizon.ml.rl.test.base.utils import write_lists_to_csv
-from Horizon.ml.rl.test.gym.open_ai_gym_environment import (
+from ml.rl.training.rl_dataset import RLDataset
+from ml.rl.test.gym import run_gym as horizon_runner
+from ml.rl.test.base.utils import write_lists_to_csv
+from ml.rl.test.gym.open_ai_gym_environment import (
     OpenAIGymEnvironment,
 )
-from Horizon.ml.rl.thrift.core.ttypes import RLParameters
+from ml.rl.thrift.core.ttypes import RLParameters
 
 USE_CPU = -1
 logger = logging.getLogger(__name__)
