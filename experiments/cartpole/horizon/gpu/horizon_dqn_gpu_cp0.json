@@ -1,6 +1,6 @@
 {
     "env": "CartPole-v0",
-    "model_type": "pytorch_parametric_dqn",
+    "model_type": "pytorch_discrete_dqn",
     "max_replay_memory_size": 50000,
     "use_gpu": true,
     "rl": {
@@ -44,6 +44,6 @@
         "avg_over_num_steps": 1000,
         "offline_train_epochs": 30,
         "timesteps_total": 500000,
-        "checkpoint_after_ts": 1000
+        "checkpoint_after_ts": 0
     }
 }
