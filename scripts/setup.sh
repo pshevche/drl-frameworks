@@ -15,4 +15,7 @@ pip install lib/horizon-0.1.tar.gz
 conda deactivate
 echo "--- SETTING UP RAY ENVIRONMENT ---"
 conda env create -f config/ray.yml
+conda activate ray-env
+pip install lib/ray-0.7.0-cp36-cp36m-manylinux1_x86_64.whl
+conda deactivate
 echo "--- SETUP COMPLETED ---"
