@@ -34,7 +34,6 @@ dependencies:
     - astor==0.7.1
     - atari-py==0.1.7
     - chardet==3.0.4
-    - dopamine-rl==2.0.3
     - enum34==1.1.6
     - future==0.17.1
     - gast==0.2.2
