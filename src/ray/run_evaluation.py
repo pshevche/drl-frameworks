@@ -106,7 +106,7 @@ def run(args, parser):
         eval_episodes.append(eval_result["evaluation"]["episodes_this_iter"])
 
         # checkpoint agent's state
-        if iteration % checkpoint_freq == 0:
+        if checkpoint_freq != 0 and iteration % checkpoint_freq == 0:
             agent.save(checkpoint_dir)
 
     # checkpoint agent's last state

@@ -54,7 +54,7 @@ class CheckpointRunner(run_experiment.Runner):
             statistics = self._run_one_iteration(iteration)
             self._log_experiment(iteration, statistics)
             # checkpoint with given frequency and after last iteration
-            if (iteration + 1) % self.checkpoint_freq == 0 or (iteration + 1) == self._num_iterations:
+            if self.checkpoint_freq != 0 and ((iteration + 1) % self.checkpoint_freq == 0 or (iteration + 1) == self._num_iterations):
                 self._checkpoint_experiment(iteration)
 
     def _checkpoint_experiment(self, iteration):

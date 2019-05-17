@@ -121,8 +121,10 @@ def main(args):
     with open(args.parameters.strip(), "r") as f:
         params = json.load(f)
 
+    checkpoint_freq = params["run_details"]["checkpoint_after_ts"]
     # train agent
-    dataset = RLDataset(args.file_path) if args.file_path else None
+    dataset = RLDataset(
+        args.file_path) if checkpoint_freq != 0 and args.file_path else None
     start_time = time.time()
     average_reward_train, num_episodes_train, average_reward_eval, num_episodes_eval, timesteps_history, trainer, predictor, env = horizon_runner.run_gym(
         params,
