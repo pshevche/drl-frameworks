@@ -10,6 +10,7 @@ for fullfile in experiments/cartpole/dopamine/*.gin; do
     filename=$(basename -- "$fullfile")
     experiment="${filename%.*}"
     echo "--- STARTING EXPERIMENT ${experiment} --- "
+    bash ./scripts/clean_caches.sh
     python src/dopamine/run_evaluation.py --base_dir="results/cartpole/" --gin_files="experiments/cartpole/dopamine/${experiment}.gin"
     echo "--- EXPERIMENT ${experiment} COMPLETED --- "
     echo

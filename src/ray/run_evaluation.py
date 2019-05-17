@@ -83,10 +83,13 @@ def run(args, parser):
     # init training agent
     ray.init()
     agent_class = get_agent_class(agent_name)
-    agent = agent_class(env=env_name, config=config)
-    if agent_name == 'APPO':
-        agent.set_timesteps_per_iteration(
-            experiment_info["appo_timesteps_per_iteration"])
+    if agent_name == "DQN":
+        agent = agent_class(env=env_name, config=config)
+    elif agent_name == "PPO":
+        ts_per_iter = experiment_info["agent_timesteps_per_iteration"]
+        agent = agent_class(env=env_name, config=config,
+                            ts_per_iter=ts_per_iter)
+
     average_reward_train, train_episodes = [], []
     average_reward_eval, eval_episodes = [], []
     timesteps_history = []
@@ -132,6 +135,8 @@ def run(args, parser):
     try:
         inference_steps = experiment_info["inference_steps"]
         print("--- STARTING RAY CARTPOLE INFERENCE EXPERIMENT ---")
+        orig_ts_per_iter = agent.config["timesteps_per_iteration"]
+        agent.config["timesteps_per_iteration"] = inference_steps
         start_time = time.time()
         agent._evaluate()
         end_time = time.time()
@@ -140,6 +145,7 @@ def run(args, parser):
         f.write(experiment_name + ', ' +
                 str(end_time - start_time) + '\n')
         f.close()
+        agent.config["timesteps_per_iteration"] = orig_ts_per_iter
         print("--- RAY CARTPOLE INFERENCE EXPERIMENT COMPLETED ---")
     except KeyError:
         pass

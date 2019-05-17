@@ -4,5 +4,3 @@ find src/dopamine -name __pycache__ -type d -exec rm -r {} +
 find src/horizon -name __pycache__ -type d -exec rm -r {} +
 # remove ray cache
 find src/ray -name __pycache__ -type d -exec rm -r {} +
-# remove results
-rm -rf results

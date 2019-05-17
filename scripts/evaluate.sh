@@ -2,7 +2,8 @@ echo "--- STARTING EVALUATION ---"
 echo
 
 echo "--- REMOVING PREVIOUS RESULTS ---"
-bash ./scripts/clean.sh
+rm -rf results/
+bash ./scripts/clean_caches.sh
 echo
 
 echo "--- CONFIGURING ANACONDA ---"

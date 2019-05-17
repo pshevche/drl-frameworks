@@ -1,21 +1,17 @@
-ray_appo_cpu_cp0:
-  run: APPO
+ray_ppo_cpu_cp0:
+  run: PPO
   env: CartPole-v0
   local_dir: "results/cartpole"  
   checkpoint_freq: 0
   checkpoint_at_end: False 
-  appo_timesteps_per_iteration: 1000
+  agent_timesteps_per_iteration: 1000
   # number of iterations
   stop:
     training_iteration: 500
   # all other hyperparameters (e.g. length of one iteration)
   config:
-    # is possible with last commits
-    # evaluation_interval: 1
-    # evaluation_num_episodes: 1
-    epsilon: 0.0003125
+    # we want to evaluate manually, but still need the evaluator
+    evaluation_interval: 1000000
     lr: 0.001
-    num_cpus_for_driver: 0
-    num_cpus_per_worker: 1
-    num_workers: 1
+    num_workers: 0
     train_batch_size: 128
