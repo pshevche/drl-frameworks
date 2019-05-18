@@ -72,7 +72,7 @@ def main(unused_argv):
     f.close()
 
     if runner.inference_steps:
-        print("--- STARTING DOPAMINE CARTPOLE INFERENCE EXPERIMENT ---\n")
+        print("--- STARTING DOPAMINE INFERENCE EXPERIMENT ---\n")
         start_time = time.time()
         runner.run_inference_test()
         end_time = time.time()
@@ -80,7 +80,7 @@ def main(unused_argv):
         f.write(experiment_name + ', ' +
                 str(end_time - start_time) + '\n')
         f.close()
-        print("--- DOPAMINE CARTPOLE INFERENCE EXPERIMENT COMPLETED ---\n")
+        print("--- DOPAMINE INFERENCE EXPERIMENT COMPLETED ---\n")
 
 
 if __name__ == '__main__':
