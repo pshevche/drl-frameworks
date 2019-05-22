@@ -7,7 +7,7 @@ ray_dqn_cpu_cp0:
   inference_steps: 500000
   # number of iterations
   stop:
-    training_iteration: 500
+    training_iteration: 5
   # all other hyperparameters (e.g. length of one iteration)
   config:
     adam_epsilon: 0.0003125

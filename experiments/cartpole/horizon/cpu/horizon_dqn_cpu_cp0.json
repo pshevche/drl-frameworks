@@ -33,7 +33,7 @@
         "lr_decay": 0.999
     },
     "run_details": {
-        "num_episodes": 1000000,
+        "num_episodes": 10000,
         "max_steps": 200,
         "train_every_ts": 1,
         "train_after_ts": 1,
@@ -43,7 +43,7 @@
         "avg_over_num_episodes": 100,
         "avg_over_num_steps": 1000,
         "offline_train_epochs": 30,
-        "timesteps_total": 500000,
+        "timesteps_total": 5500,
         "checkpoint_after_ts": 0,
         "num_inference_steps": 500000
     }
