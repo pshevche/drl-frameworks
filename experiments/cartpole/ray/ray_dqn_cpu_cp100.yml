@@ -4,10 +4,12 @@ ray_dqn_cpu_cp100:
   local_dir: "results/cartpole"  
   checkpoint_freq: 100
   checkpoint_at_end: True
+  agent_training_steps: 1000
+  agent_evaluation_steps: 1000
   # number of iterations
   stop:
     training_iteration: 500
-  # all other hyperparameters (e.g. length of one iteration)
+  # all other hyperparameters 
   config:
     adam_epsilon: 0.0003125
     buffer_size: 50000
@@ -18,5 +20,4 @@ ray_dqn_cpu_cp100:
     lr: 0.001
     num_workers: 0
     prioritized_replay: False
-    timesteps_per_iteration: 1000
     train_batch_size: 128
