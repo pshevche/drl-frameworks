@@ -64,23 +64,13 @@ class CustomDQNTrainer(dqn.DQNTrainer):
 
     @override(dqn.DQNTrainer)
     def _evaluate(self):
-        ep_count = 0
-        rew_sum = 0
         steps = 0
         self.evaluation_ev.restore(self.local_evaluator.save())
         self.evaluation_ev.foreach_policy(lambda p, _: p.set_epsilon(0))
         while steps < self.evaluation_steps:
-            self.evaluation_ev.sample()
-            eval_result = collect_metrics(self.evaluation_ev)
-            ep_count += 1
-            rew_sum += eval_result["episode_reward_mean"]
-            steps += eval_result["episode_len_mean"]
-
-        metrics = {
-            "episode_reward_mean": rew_sum / ep_count,
-            "episodes_this_iter": ep_count
-        }
-
+            batch = self.evaluation_ev.sample()
+            steps += batch.count
+        metrics = collect_metrics(self.evaluation_ev)
         return {"evaluation": metrics}
 
 
