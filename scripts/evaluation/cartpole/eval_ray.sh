@@ -1,7 +1,7 @@
 source ~/miniconda3/etc/profile.d/conda.sh
 
 echo "--- STARTING RAY CARTPOLE EXPERIMENTS ---"
-conda activate ray-env
+conda activate drl-frameworks-env
 mkdir -p results/cartpole/runtime
 echo
 for fullfile in experiments/cartpole/ray/*.yml; do 

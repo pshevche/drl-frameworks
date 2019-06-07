@@ -1,7 +1,7 @@
 source ~/miniconda3/etc/profile.d/conda.sh
 
 echo "--- STARTING DOPAMINE SPACE INVADERS EXPERIMENTS ---"
-conda activate dopamine-env
+conda activate drl-frameworks-env
 mkdir -p results/space_invaders/runtime
 echo
 for fullfile in experiments/space_invaders/dopamine/*.gin; do 

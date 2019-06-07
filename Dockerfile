@@ -3,7 +3,7 @@
 
 # My NVIDIA driver supports only cuda <= 9.0
 # FROM nvidia/cuda:9.2-cudnn7-devel-ubuntu18.04
-FROM nvidia/cuda:9.0-cudnn7-devel-ubuntu16.04
+FROM nvidia/cuda:9.0-base-ubuntu16.04
 
 SHELL ["/bin/bash", "-c"]
 

@@ -1,7 +1,7 @@
 source ~/miniconda3/etc/profile.d/conda.sh
 
 echo "--- STARTING DOPAMINE CARTPOLE EXPERIMENTS ---"
-conda activate dopamine-env
+conda activate drl-frameworks-env
 mkdir -p results/cartpole/runtime
 echo
 for fullfile in experiments/cartpole/dopamine/*.gin; do 
