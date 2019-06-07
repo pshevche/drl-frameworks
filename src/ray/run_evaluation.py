@@ -79,16 +79,14 @@ def run(args, parser):
     checkpoint_dir = os.path.join(results_dir, experiment_name)
     num_iterations = experiment_info["stop"]["training_iteration"]
     config = experiment_info["config"]
+    training_steps = experiment_info["agent_training_steps"]
+    evaluation_steps = experiment_info["agent_evaluation_steps"]
 
     # init training agent
     ray.init()
     agent_class = get_agent_class(agent_name)
-    if agent_name == "DQN":
-        agent = agent_class(env=env_name, config=config)
-    elif agent_name == "PPO":
-        ts_per_iter = experiment_info["agent_timesteps_per_iteration"]
-        agent = agent_class(env=env_name, config=config,
-                            ts_per_iter=ts_per_iter)
+    agent = agent_class(env=env_name, config=config,
+                        training_steps=training_steps, evaluation_steps=evaluation_steps)
 
     average_reward_train, train_episodes = [], []
     average_reward_eval, eval_episodes = [], []

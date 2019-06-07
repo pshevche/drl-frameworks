@@ -45,6 +45,6 @@
         "offline_train_epochs": 30,
         "timesteps_total": 500000,
         "checkpoint_after_ts": 0,
-        "num_inference_steps": 500000
+        "num_inference_steps": 100000
     }
 }
