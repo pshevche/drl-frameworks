@@ -47,7 +47,9 @@ RUN wget https://archive.apache.org/dist/spark/spark-2.3.3/spark-2.3.3-bin-hadoo
     rm spark-2.3.3-bin-hadoop2.7.tgz
 
 # Add files to image
-ADD . drl-frameworks/
+ADD ./config drl-frameworks/config
+ADD ./scripts drl-frameworks/scripts
+ADD ./lib drl-frameworks/lib
 
 # Set up framework environments
 WORKDIR ${HOME}/drl-frameworks
