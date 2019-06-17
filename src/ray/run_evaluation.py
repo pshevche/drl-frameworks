@@ -133,17 +133,18 @@ def run(args, parser):
     try:
         inference_steps = experiment_info["inference_steps"]
         print("--- STARTING RAY CARTPOLE INFERENCE EXPERIMENT ---")
-        orig_ts_per_iter = agent.config["timesteps_per_iteration"]
-        agent.config["timesteps_per_iteration"] = inference_steps
+        orig_ts_per_iter = agent.evaluation_steps
+        agent.evaluation_steps = inference_steps
         start_time = time.time()
         agent._evaluate()
         end_time = time.time()
         inference_file = os.path.join(results_dir, 'runtime', 'inference.csv')
+
         f = open(inference_file, 'a+')
         f.write(experiment_name + ', ' +
                 str(end_time - start_time) + '\n')
         f.close()
-        agent.config["timesteps_per_iteration"] = orig_ts_per_iter
+        agent.evaluation_steps = orig_ts_per_iter
         print("--- RAY CARTPOLE INFERENCE EXPERIMENT COMPLETED ---")
     except KeyError:
         pass
