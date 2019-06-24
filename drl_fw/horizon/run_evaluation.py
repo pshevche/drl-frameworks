@@ -9,7 +9,7 @@ import time
 import tensorflow as tf
 import io
 
-from custom_trainer import custom_train
+from drl_fw.horizon.custom_trainer import custom_train
 from ml.rl.training.rl_dataset import RLDataset
 from ml.rl.test.gym import run_gym as horizon_runner
 from ml.rl.test.base.utils import write_lists_to_csv

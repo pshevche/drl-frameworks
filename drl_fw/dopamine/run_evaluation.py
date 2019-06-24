@@ -25,7 +25,7 @@ from absl import app
 from absl import flags
 
 from dopamine.discrete_domains import run_experiment
-import checkpoint_runner
+import drl_fw.dopamine.checkpoint_runner
 
 import tensorflow as tf
 

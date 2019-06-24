@@ -13,7 +13,7 @@ import yaml
 import ray
 from ray.tune.config_parser import make_parser
 
-from custom_trainer import get_agent_class
+from drl_fw.ray.custom_trainer import get_agent_class
 
 EXAMPLE_USAGE = """
 Training example via RLlib CLI:
