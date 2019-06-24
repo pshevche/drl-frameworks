@@ -10,7 +10,7 @@ for fullfile in experiments/space_invaders/ray/*.yml; do
     echo "--- STARTING EXPERIMENT ${experiment} --- "
     bash ./scripts/evaluation/clear_caches.sh
     export TUNE_RESULT_DIR=results/cartpole/${experiment}
-    python src/ray/run_evaluation.py -f="experiments/space_invaders/ray/${experiment}.yml"
+    python drl_fw/ray/run_evaluation.py -f="experiments/space_invaders/ray/${experiment}.yml"
     echo "--- EXPERIMENT ${experiment} COMPLETED --- "
     echo
 done

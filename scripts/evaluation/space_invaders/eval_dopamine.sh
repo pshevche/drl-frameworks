@@ -9,7 +9,7 @@ for fullfile in experiments/space_invaders/dopamine/*.gin; do
     experiment="${filename%.*}"
     echo "--- STARTING EXPERIMENT ${experiment} --- "
     bash ./scripts/evaluation/clear_caches.sh
-    python src/dopamine/run_evaluation.py --base_dir="results/space_invaders/" --gin_files="experiments/space_invaders/dopamine/${experiment}.gin"
+    python drl_fw/dopamine/run_evaluation.py --base_dir="results/space_invaders/" --gin_files="experiments/space_invaders/dopamine/${experiment}.gin"
     echo "--- EXPERIMENT ${experiment} COMPLETED --- "
     echo
 done

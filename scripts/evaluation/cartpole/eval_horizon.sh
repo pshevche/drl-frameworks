@@ -10,7 +10,7 @@ for fullfile in experiments/cartpole/horizon/cpu/*.json; do
     echo "--- STARTING EXPERIMENT ${experiment} --- "
     bash ./scripts/evaluation/clear_caches.sh
     mkdir -p results/cartpole/${experiment}
-    python src/horizon/run_evaluation.py -p experiments/cartpole/horizon/cpu/${experiment}.json -f results/cartpole/${experiment}/checkpoints.json -v results/cartpole/
+    python drl_fw/horizon/run_evaluation.py -p experiments/cartpole/horizon/cpu/${experiment}.json -f results/cartpole/${experiment}/checkpoints.json -v results/cartpole/
     echo "--- EXPERIMENT ${experiment} COMPLETED --- "
     echo
 done
@@ -20,7 +20,7 @@ for fullfile in experiments/cartpole/horizon/gpu/*.json; do
     echo "--- STARTING EXPERIMENT ${experiment} --- "
     bash ./scripts/evaluation/clear_caches.sh
     mkdir -p results/cartpole/${experiment}
-    python src/horizon/run_evaluation.py -g 0 -p experiments/cartpole/horizon/gpu/${experiment}.json -f results/cartpole/${experiment}/checkpoints.json -v results/cartpole/
+    python drl_fw/horizon/run_evaluation.py -g 0 -p experiments/cartpole/horizon/gpu/${experiment}.json -f results/cartpole/${experiment}/checkpoints.json -v results/cartpole/
     echo "--- EXPERIMENT ${experiment} COMPLETED --- "
     echo
 done
