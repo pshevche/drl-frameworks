@@ -219,7 +219,7 @@ class QueryOptEnv(core.Env):
         docker_img_name = "pg"
         container_name = "docker-pg"
         # docker build
-        docker_bld = "sudo docker build -t {} . ".format(docker_img_name)
+        docker_bld = "docker build -t {} . ".format(docker_img_name)
         p = sp.Popen(docker_bld, shell=True, cwd=docker_dir)
         p.wait()
         print("building docker image {} successful".format(docker_img_name))
@@ -227,15 +227,15 @@ class QueryOptEnv(core.Env):
         # start / or create new docker container
         # Note: we need to start docker in a privileged mode so we can clear
         # cache later on.
-        docker_run = "sudo docker run --name {} -p \
+        docker_run = "docker run --name {} -p \
         5432:5432 --privileged -d {}".format(container_name, docker_img_name)
-        docker_start_cmd = "sudo docker start docker-pg || " + docker_run
+        docker_start_cmd = "docker start docker-pg || " + docker_run
         p = sp.Popen(docker_start_cmd, shell=True, cwd=docker_dir)
         p.wait()
         print("starting docker container {} successful".format(container_name))
         time.sleep(2)
 
-        check_container_cmd = "sudo docker ps | grep {}".format(container_name)
+        check_container_cmd = "docker ps | grep {}".format(container_name)
         process = sp.Popen(check_container_cmd, shell=True)
         ret_code = process.wait()
         if ret_code != 0:
