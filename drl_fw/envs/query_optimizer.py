@@ -46,4 +46,8 @@ class ParkQueryOptimizer(gym.Env):
         for e in edges:
             obs[e[0] * self.total_nodes + e[1]] = 1
 
+        # Ray does type-checking on info-dict
+        if info is None:
+            info = {}
+
         return obs, reward, done, info

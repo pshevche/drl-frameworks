@@ -4,12 +4,12 @@ ray_dqn_cpu_cp0:
   local_dir: "results/query_optimizer" 
   checkpoint_freq: 0
   checkpoint_at_end: False 
-  agent_training_steps: 1000
-  agent_evaluation_steps: 1000
-  inference_steps: 100000
+  agent_training_steps: 20
+  agent_evaluation_steps: 20
+  inference_steps: 100
   # number of iterations
   stop:
-    training_iteration: 1000
+    training_iteration: 10
   # all other hyperparameters 
   config:
     adam_epsilon: 0.0003125
