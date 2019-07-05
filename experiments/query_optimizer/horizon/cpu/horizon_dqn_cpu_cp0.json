@@ -33,18 +33,18 @@
         "lr_decay": 0.999
     },
     "run_details": {
-        "num_episodes": 1000000,
+        "num_episodes": 1e6,
         "max_steps": 200,
         "train_every_ts": 1,
         "train_after_ts": 1,
-        "test_every_ts": 1000,
+        "test_every_ts": 20,
         "test_after_ts": 1,
         "num_train_batches": 1,
         "avg_over_num_episodes": 100,
-        "avg_over_num_steps": 1000,
+        "avg_over_num_steps": 20,
         "offline_train_epochs": 30,
-        "timesteps_total": 1000000,
+        "timesteps_total": 200,
         "checkpoint_after_ts": 0,
-        "num_inference_steps": 100000
+        "num_inference_steps": 100
     }
 }
