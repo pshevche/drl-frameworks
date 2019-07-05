@@ -11,7 +11,7 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
-# limitations under the License.
+# limitations under the Licenclear_cachesse.
 r"""The entry point for running a Dopamine agent.
 
 """
@@ -25,7 +25,7 @@ from absl import app
 from absl import flags
 
 from dopamine.discrete_domains import run_experiment
-import drl_fw.dopamine.checkpoint_runner
+import drl_fw.dopamine.checkpoint_runner as checkpoint_runner
 
 import tensorflow as tf
 
