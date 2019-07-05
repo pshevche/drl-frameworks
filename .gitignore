@@ -2,3 +2,5 @@
 **/results/**
 **/__pycache__/**
 **/*egg-info*/**
+**/test_data/**
+!**/test_data/cartpole_small*

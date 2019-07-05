@@ -10,6 +10,7 @@ import tensorflow as tf
 import io
 
 from drl_fw.horizon.custom_trainer import custom_train
+from drl_fw.tensorboard.custom_tensorboard import Tensorboard
 from ml.rl.training.rl_dataset import RLDataset
 from ml.rl.test.gym import run_gym as horizon_runner
 from ml.rl.test.base.utils import write_lists_to_csv
@@ -88,28 +89,6 @@ def create_parser():
         default=None,
     )
     return parser
-
-
-class Tensorboard:
-    def __init__(self, logdir):
-        self.writer = tf.summary.FileWriter(logdir)
-
-    def close(self):
-        self.writer.close()
-
-    def log_summary(self, average_reward_train, num_episodes_train, average_reward_eval, num_episodes_eval, iteration):
-        summary = tf.Summary(value=[
-            tf.Summary.Value(tag='Train/NumEpisodes',
-                             simple_value=num_episodes_train),
-            tf.Summary.Value(tag='Train/AverageReturns',
-                             simple_value=average_reward_train),
-            tf.Summary.Value(tag='Eval/NumEpisodes',
-                             simple_value=num_episodes_eval),
-            tf.Summary.Value(tag='Eval/AverageReturns',
-                             simple_value=average_reward_eval)
-        ])
-        self.writer.add_summary(summary, iteration)
-        self.writer.flush()
 
 
 def main(args):

@@ -7,8 +7,9 @@ This repository contains the implementation part of our work in which we compare
 1. Install Anaconda from [here][miniconda] (make sure to download the Python 3 version). Leave Anaconda's installation directory default (home/miniconda3).
 2. Check Anaconda's version by executing `conda -V`. If Anaconda's version is `<=4.6.8`, run `conda update conda`.
 3. Create Anaconda environments by running `./scripts/setup.sh`.
-4. Run experiments for a specific environment by executing `./scripts/evaluation/{environment}/eval_all.sh`. Alternatively, you can run experiments for individual frameworks by running `./scripts/evaluation/{environment}/eval_{framework}.sh`.
-5. View evaluation results in Tensorboard (`localhost:6006`) after running `tensorboard --logdir=results`. You may need to activate the proper environment first (`conda activate drl-frameworks-env`).
+4. You can validate your setup by running `pytest tests/`.
+5. Run experiments for a specific environment by executing `./scripts/evaluation/{environment}/eval_all.sh`. Alternatively, you can run experiments for individual frameworks by running `./scripts/evaluation/{environment}/eval_{framework}.sh`.
+6. View evaluation results in Tensorboard (`localhost:6006`) after running `tensorboard --logdir=results`. You may need to activate the proper environment first (`conda activate drl-frameworks-env`).
 
 ### Using Docker
 1. Install Docker following the instructions from [here][docker].
@@ -21,8 +22,9 @@ docker build -t drl-frameworks:base .
 ```
 docker run --runtime=nvidia -v $PWD:/home/drl-frameworks -p 0.0.0.0:6006:6006 -it drl-frameworks:base 
 ```
-5. Once inside the container, run experiments by executing `./scripts/evaluation/{environment}/eval_all.sh` for the complete evaluation or `./scripts/evaluation/{environment}/eval_{framework}.sh` for evaluating single frameworks.
-6. Run `tensorboard --logdir=results` inside the container, and view the Tensorboard summary of evaluation results in your local browser at `localhost:6006`. You may need to activate one of the framework environments first:
+5. Once inside the container, you can validate the setup by running `pytest tests/`.
+6. Alternatively, procedd with the experiments by executing `./scripts/evaluation/{environment}/eval_all.sh` for the complete evaluation or `./scripts/evaluation/{environment}/eval_{framework}.sh` inside the container for evaluating single frameworks.
+7. Run `tensorboard --logdir=results` inside the container, and view the Tensorboard summary of evaluation results in your local browser at `localhost:6006`. You may need to activate one of the framework environments first:
 ```
 source ~/miniconda3/etc/profile.d/conda.sh
 conda activate drl-frameworks-env

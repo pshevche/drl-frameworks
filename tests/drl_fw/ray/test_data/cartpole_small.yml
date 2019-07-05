@@ -1,0 +1,23 @@
+cartpole_small:
+  run: DQN
+  env: CartPole-v0
+  local_dir: "tests/drl_fw/ray/test_data" 
+  checkpoint_freq: 1
+  checkpoint_at_end: False 
+  agent_training_steps: 100
+  agent_evaluation_steps: 100
+  # number of iterations
+  stop:
+    training_iteration: 5
+  # all other hyperparameters 
+  config:
+    adam_epsilon: 0.0003125
+    buffer_size: 50000
+    dueling: False
+    double_q: False
+    # we want to evaluate manually, but still need the evaluator
+    evaluation_interval: 1000000
+    lr: 0.001
+    num_workers: 0
+    prioritized_replay: False
+    train_batch_size: 128

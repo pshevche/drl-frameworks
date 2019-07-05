@@ -231,7 +231,8 @@ def custom_train_gym_online_rl(
 
                 # save Tensorboard statistics
                 timesteps_history.append(ts)
-                avg_train_reward = sum(reward_hist) / len(reward_hist)
+                avg_train_reward = sum(
+                    reward_hist) / len(reward_hist) if len(reward_hist) != 0 else 0
                 average_reward_train.append(avg_train_reward)
                 num_episodes_train.append(len(reward_hist))
                 average_reward_eval.append(avg_rewards)

@@ -14,33 +14,12 @@ import ray
 from ray.tune.config_parser import make_parser
 
 from drl_fw.ray.custom_trainer import get_agent_class
+from drl_fw.tensorboard.custom_tensorboard import Tensorboard
 
 EXAMPLE_USAGE = """
 Training example via RLlib CLI:
     ./run_evaluation -f src/ray/experiments/cartpole/ray_dqn_cpu_cp1.yml
 """
-
-
-class Tensorboard:
-    def __init__(self, logdir):
-        self.writer = tf.summary.FileWriter(logdir)
-
-    def close(self):
-        self.writer.close()
-
-    def log_summary(self, average_reward_train, num_episodes_train, average_reward_eval, num_episodes_eval, iteration):
-        summary = tf.Summary(value=[
-            tf.Summary.Value(tag='Train/NumEpisodes',
-                             simple_value=num_episodes_train),
-            tf.Summary.Value(tag='Train/AverageReturns',
-                             simple_value=average_reward_train),
-            tf.Summary.Value(tag='Eval/NumEpisodes',
-                             simple_value=num_episodes_eval),
-            tf.Summary.Value(tag='Eval/AverageReturns',
-                             simple_value=average_reward_eval)
-        ])
-        self.writer.add_summary(summary, iteration)
-        self.writer.flush()
 
 
 def create_parser(parser_creator=None):
