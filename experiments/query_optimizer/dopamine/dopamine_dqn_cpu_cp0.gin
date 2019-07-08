@@ -12,25 +12,25 @@ DQNAgent.observation_shape = (1681,)
 # DQNAgent.stack_size = %gym_lib.CARTPOLE_STACK_SIZE
 DQNAgent.network = @park_network.qopt_dqn_network
 DQNAgent.gamma = 0.99
-DQNAgent.update_horizon = 1
-DQNAgent.min_replay_history = 500
+DQNAgent.update_horizon = 25
+DQNAgent.min_replay_history = 1000
 DQNAgent.update_period = 1
 DQNAgent.target_update_period = 100
 DQNAgent.epsilon_fn = @dqn_agent.identity_epsilon
 DQNAgent.tf_device = '/cpu:*'  # use '/cpu:*' for non-GPU version
 DQNAgent.optimizer = @tf.train.AdamOptimizer()
 
-tf.train.AdamOptimizer.learning_rate = 0.001
+tf.train.AdamOptimizer.learning_rate = 0.0001
 tf.train.AdamOptimizer.epsilon = 0.0003125
 
 create_gym_environment.environment_name = 'ParkQueryOptimizer'
 create_gym_environment.version = 'v0'
 create_agent.agent_name = 'dqn'
 CheckpointRunner.create_environment_fn = @gym_lib.create_gym_environment
-CheckpointRunner.num_iterations = 10
-CheckpointRunner.training_steps = 20
-CheckpointRunner.evaluation_steps = 20
-CheckpointRunner.max_steps_per_episode = 200  # Default max episode length.
+CheckpointRunner.num_iterations = 1000
+CheckpointRunner.training_steps = 300
+CheckpointRunner.evaluation_steps = 500
+CheckpointRunner.max_steps_per_episode = 25  # Default max episode length.
 CheckpointRunner.checkpoint_freq = 0  # Checkpointing frequency.
 CheckpointRunner.inference_steps = 100 # Measure runtime over this number of steps
 

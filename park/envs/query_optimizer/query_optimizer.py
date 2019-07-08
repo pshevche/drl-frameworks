@@ -50,7 +50,7 @@ class QueryOptEnv(core.Env):
         #  Socket to talk to server
         logger.info("Going to connect to calcite server")
         self.socket = context.socket(zmq.PAIR)
-        self.socket.connect("tcp://docker-pg:" + str(self.port))
+        self.socket.connect("tcp://drl-fw:" + str(self.port))
         self.reward_normalization = config.qopt_reward_normalization
 
         # TODO: describe spaces
