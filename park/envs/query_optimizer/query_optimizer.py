@@ -50,7 +50,7 @@ class QueryOptEnv(core.Env):
         #  Socket to talk to server
         logger.info("Going to connect to calcite server")
         self.socket = context.socket(zmq.PAIR)
-        self.socket.connect("tcp://localhost:" + str(self.port))
+        self.socket.connect("tcp://docker-pg:" + str(self.port))
         self.reward_normalization = config.qopt_reward_normalization
 
         # TODO: describe spaces
@@ -187,69 +187,69 @@ class QueryOptEnv(core.Env):
         """
         logger.info("installing dependencies for query optimizer")
         self.base_dir = park.__path__[0]
-        self._install_if_needed("docker")
-        self._install_if_needed("mvn")
-        self._install_if_needed("java")
+        # self._install_if_needed("docker")
+        # self._install_if_needed("mvn")
+        # self._install_if_needed("java")
 
-        # set up the query_optimizer repo
-        try:
-            qopt_path = os.environ["QUERY_OPT_PATH"]
-        except:
-            # if it has not been set, then set it based on the base dir
-            qopt_path = self.base_dir + "/query-optimizer"
-            # if this doesn't exist, then git clone this
-            if not os.path.exists(qopt_path):
-                print("going to clone query-optimizer library")
-                cmd = "git clone https://github.com/parimarjan/query-optimizer.git"
-                p = sp.Popen(cmd, shell=True,
-                             cwd=self.base_dir)
-                p.wait()
-                print("cloned query-optimizer library")
-        print("query optimizer path is: ", qopt_path)
+        # # set up the query_optimizer repo
+        # try:
+        #     qopt_path = os.environ["QUERY_OPT_PATH"]
+        # except:
+        #     # if it has not been set, then set it based on the base dir
+        #     qopt_path = self.base_dir + "/query-optimizer"
+        #     # if this doesn't exist, then git clone this
+        #     if not os.path.exists(qopt_path):
+        #         print("going to clone query-optimizer library")
+        #         cmd = "git clone https://github.com/parimarjan/query-optimizer.git"
+        #         p = sp.Popen(cmd, shell=True,
+        #                      cwd=self.base_dir)
+        #         p.wait()
+        #         print("cloned query-optimizer library")
+        # print("query optimizer path is: ", qopt_path)
 
-        # TODO: if psql -d imdb already set up locally, then do not use docker
-        # to set up postgres. Is this really useful, or should we just assume
-        # docker is always the way to go?
+        # # TODO: if psql -d imdb already set up locally, then do not use docker
+        # # to set up postgres. Is this really useful, or should we just assume
+        # # docker is always the way to go?
 
-        # TODO: print plenty of warning messages: going to start docker,
-        # docker's directory should have enough space - /var/lib/docker OR
-        # change it manually following instructions at >>>> .....
+        # # TODO: print plenty of warning messages: going to start docker,
+        # # docker's directory should have enough space - /var/lib/docker OR
+        # # change it manually following instructions at >>>> .....
 
-        docker_dir = qopt_path + "/docker"
-        docker_img_name = "pg"
+        # docker_dir = qopt_path + "/docker"
+        # docker_img_name = "pg"
         container_name = "docker-pg"
-        # docker build
-        docker_bld = "docker build -t {} . ".format(docker_img_name)
-        p = sp.Popen(docker_bld, shell=True, cwd=docker_dir)
-        p.wait()
-        print("building docker image {} successful".format(docker_img_name))
-        time.sleep(2)
-        # start / or create new docker container
-        # Note: we need to start docker in a privileged mode so we can clear
-        # cache later on.
-        docker_run = "docker run --name {} -p \
-        5432:5432 --privileged -d {}".format(container_name, docker_img_name)
-        docker_start_cmd = "docker start docker-pg || " + docker_run
-        p = sp.Popen(docker_start_cmd, shell=True, cwd=docker_dir)
-        p.wait()
-        print("starting docker container {} successful".format(container_name))
-        time.sleep(2)
+        # # docker build
+        # docker_bld = "docker build -t {} . ".format(docker_img_name)
+        # p = sp.Popen(docker_bld, shell=True, cwd=docker_dir)
+        # p.wait()
+        # print("building docker image {} successful".format(docker_img_name))
+        # time.sleep(2)
+        # # start / or create new docker container
+        # # Note: we need to start docker in a privileged mode so we can clear
+        # # cache later on.
+        # docker_run = "docker run --name {} -p \
+        # 5432:5432 --privileged -d {}".format(container_name, docker_img_name)
+        # docker_start_cmd = "docker start docker-pg || " + docker_run
+        # p = sp.Popen(docker_start_cmd, shell=True, cwd=docker_dir)
+        # p.wait()
+        # print("starting docker container {} successful".format(container_name))
+        # time.sleep(2)
 
-        check_container_cmd = "docker ps | grep {}".format(container_name)
-        process = sp.Popen(check_container_cmd, shell=True)
-        ret_code = process.wait()
-        if ret_code != 0:
-            print("something bad happened when we tried to start docker container")
-            print("got ret code: ", ret_code)
-            env.clean()
+        # check_container_cmd = "docker ps | grep {}".format(container_name)
+        # process = sp.Popen(check_container_cmd, shell=True)
+        # ret_code = process.wait()
+        # if ret_code != 0:
+        #     print("something bad happened when we tried to start docker container")
+        #     print("got ret code: ", ret_code)
+        #     env.clean()
 
-        time.sleep(2)
+        # time.sleep(2)
         # need to ensure that we psql has started in the container. If this is
         # the first time it is starting, then pg_restore could take a while.
         import psycopg2
         while True:
             try:
-                conn = psycopg2.connect(host="localhost", port=5432, dbname="imdb",
+                conn = psycopg2.connect(host="docker-pg", port=5432, dbname="imdb",
                                         user="imdb", password="imdb")
                 conn.close()
                 break
