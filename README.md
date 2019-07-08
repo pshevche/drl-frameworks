@@ -23,6 +23,7 @@ bash ./scripts/docker/init.sh
 5. You can validate your setup by running `pytest tests/`.
 6. If you'd like to evaluate the frameworks against the [Park][park]'s Query Optimizer environment, then do the following extra steps:
     - edit `/etc/hosts` file and add the following alias: `127.0.0.1   docker-pg`;
+    - edit `/etc/hosts` file and add the following alias: `127.0.0.1   drl-fw`;
     - build the Postgres Docker image used by the environment: `docker build -t pg park/query-optimizer/docker/`;
     - start the Postgres container: `docker start docker-pg || docker run --name docker-pg -p 0.0.0.0:5432:5432 --net drl-net --privileged -d pg`.
 5. Run experiments for a specific environment by executing `bash ./scripts/evaluation/{environment}/eval_all.sh`. Alternatively, you can run experiments for individual frameworks by running `bash ./scripts/evaluation/{environment}/eval_{framework}.sh`.
