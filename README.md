@@ -25,7 +25,7 @@ bash ./scripts/docker/init.sh
     - edit `/etc/hosts` file and add the following alias: `127.0.0.1   docker-pg`;
     - build the Postgres Docker image used by the environment: `docker build -t pg park/query-optimizer/docker/`;
     - start the Postgres container: `docker start docker-pg || docker run --name docker-pg -p 0.0.0.0:5432:5432 --net drl-net --privileged -d pg`.
-5. Run experiments for a specific environment by executing `./scripts/evaluation/{environment}/eval_all.sh`. Alternatively, you can run experiments for individual frameworks by running `./scripts/evaluation/{environment}/eval_{framework}.sh`.
+5. Run experiments for a specific environment by executing `bash ./scripts/evaluation/{environment}/eval_all.sh`. Alternatively, you can run experiments for individual frameworks by running `bash ./scripts/evaluation/{environment}/eval_{framework}.sh`.
 6. View evaluation results in Tensorboard (`localhost:6006`) after running `tensorboard --logdir=results`. You may need to activate the proper environment first (`conda activate drl-frameworks-env`).
 
 
