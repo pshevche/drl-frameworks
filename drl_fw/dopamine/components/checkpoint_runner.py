@@ -4,6 +4,67 @@ import tensorflow as tf
 from dopamine.discrete_domains import run_experiment
 from dopamine.discrete_domains import atari_lib
 from dopamine.discrete_domains import iteration_statistics
+from dopamine.agents.dqn import dqn_agent
+from dopamine.agents.rainbow import rainbow_agent
+from dopamine.agents.implicit_quantile import implicit_quantile_agent
+from drl_fw.dopamine.components import parametric_agents
+
+
+@gin.configurable
+def create_parametric_agent(sess, environment, agent_name=None, summary_writer=None,
+                            debug_mode=False):
+    """Creates an agent.
+
+    Args:
+        sess: A `tf.Session` object for running associated ops.
+        environment: A gym environment (e.g. Atari 2600).
+        agent_name: str, name of the agent to create.
+        summary_writer: A Tensorflow summary writer to pass to the agent
+        for in-agent training statistics in Tensorboard.
+        debug_mode: bool, whether to output Tensorboard summaries. If set to true,
+        the agent will output in-episode statistics to Tensorboard. Disabled by
+        default as this results in slower training.
+
+    Returns:
+        agent: An RL agent.
+
+    Raises:
+        ValueError: If `agent_name` is not in supported list.
+    """
+    assert agent_name is not None
+    if not debug_mode:
+        summary_writer = None
+    if agent_name == 'dqn':
+        return dqn_agent.DQNAgent(sess, num_actions=environment.action_space.n,
+                                  summary_writer=summary_writer)
+    elif agent_name == 'rainbow':
+        return rainbow_agent.RainbowAgent(
+            sess, num_actions=environment.action_space.n,
+            summary_writer=summary_writer)
+    elif agent_name == 'implicit_quantile':
+        return implicit_quantile_agent.ImplicitQuantileAgent(
+            sess, num_actions=environment.action_space.n,
+            summary_writer=summary_writer)
+    elif agent_name == 'parametric_dqn':
+        return parametric_agents.ParametricDQNAgent(sess, num_actions=environment.action_space.n, environment=environment.environment, summary_writer=summary_writer)
+    elif agent_name == 'parametric_rainbow':
+        return parametric_agents.ParametricRainbowAgent(sess, num_actions=environment.action_space.n, environment=environment.environment, summary_writer=summary_writer)
+    elif agent_name == 'parametric_implicit_quantile':
+        return parametric_agents.ParametricImplicitQuantileAgent(sess, num_actions=environment.action_space.n, environment=environment.environment, summary_writer=summary_writer)
+    else:
+        raise ValueError('Unknown agent: {}'.format(agent_name))
+
+
+def create_runner(base_dir):
+    """Creates an experiment CheckpointRunner.
+
+    Args:
+        base_dir: str, base directory for hosting all subdirectories.
+
+    Returns:
+        runner: A `CheckpointRunner` like object.
+    """
+    return CheckpointRunner(base_dir, create_parametric_agent)
 
 
 @gin.configurable
@@ -76,15 +137,3 @@ class CheckpointRunner(run_experiment.Runner):
         statistics = iteration_statistics.IterationStatistics()
         _ = self._run_one_phase(
             self.inference_steps, statistics, 'eval')
-
-
-def create_runner(base_dir):
-    """Creates an experiment CheckpointRunner.
-
-    Args:
-        base_dir: str, base directory for hosting all subdirectories.
-
-    Returns:
-        runner: A `CheckpointRunner` like object.
-    """
-    return CheckpointRunner(base_dir, run_experiment.create_agent)

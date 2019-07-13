@@ -7,14 +7,28 @@ IMBD_TABLES_COUNT = 21
 
 
 class ParkQueryOptimizer(gym.Env):
+    """
+    Wrapper around Park's Query Optimizer environment. 
+    Key differences: 
+    1. Graph observation space is mapped to a Box-shape which represents a flattened adjacency matrix.
+    2. Edge action space is mapped to a Discrete space which will be filtered in framework's agents to select only valid actions.
+    """
+
     def __init__(self):
         self.park_env = QueryOptEnv()
+
         # observation space is the adjacency matrix
         self.total_nodes = 2 * IMBD_TABLES_COUNT - 1
         self.observation_space = spaces.Box(
             low=0.0, high=1.0, shape=(self.total_nodes*self.total_nodes,))
+
         # action space will map possible edges to numbers
-        self.action_space = spaces.Discrete(1)
+        self.action_space = spaces.Discrete(
+            self.total_nodes * self.total_nodes)
+
+        # action mask corresponds to observation space
+        self.action_mask = np.zeros(self.observation_space.shape)
+
         # Hack for dopamine: additional wrapper around this env to avoid errors in gym_lib:69
         self.env = self
 
@@ -24,27 +38,28 @@ class ParkQueryOptimizer(gym.Env):
         obs = np.zeros(self.observation_space.shape)
         for e in graph.graph.edges:
             obs[e[0] * self.total_nodes + e[1]] = 1
+            obs[e[1] * self.total_nodes + e[0]] = 1
 
-        # map edges to numbers
-        self.action_space.n = graph.number_of_edges()
+        # action mask corresponds to observation space
+        self.action_mask = obs
 
         return obs
 
     def step(self, action):
         # map number to edge
-        edges = [e for e in self.park_env.graph.graph.edges]
-        edge_act = edges[action]
+        edge_act = (action // self.total_nodes, action % self.total_nodes)
 
         # perform action as usually
         graph, reward, done, info = self.park_env.step(edge_act)
 
-        # update action space
-        self.action_space.n = graph.number_of_edges()
-
         # get current graph state
         obs = np.zeros(self.observation_space.shape)
-        for e in edges:
+        for e in graph.graph.edges:
             obs[e[0] * self.total_nodes + e[1]] = 1
+            obs[e[1] * self.total_nodes + e[0]] = 1
+
+        # action mask corresponds to observation space
+        self.action_mask = obs
 
         # Ray does type-checking on info-dict
         if info is None:

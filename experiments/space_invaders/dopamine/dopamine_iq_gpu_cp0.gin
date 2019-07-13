@@ -31,7 +31,7 @@ tf.train.AdamOptimizer.epsilon = 0.0003125
 atari_lib.create_atari_environment.game_name = 'SpaceInvaders'
 # Sticky actions with probability 0.25, as suggested by (Machado et al., 2017).
 atari_lib.create_atari_environment.sticky_actions = True
-create_agent.agent_name = 'implicit_quantile'
+create_parametric_agent.agent_name = 'implicit_quantile'
 CheckpointRunner.num_iterations = 200
 CheckpointRunner.training_steps = 250000
 CheckpointRunner.evaluation_steps = 125000

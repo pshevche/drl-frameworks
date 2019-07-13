@@ -1,0 +1,40 @@
+# Hyperparameters for a simple Rainbow-style Cartpole agent. The
+# hyperparameters chosen achieve reasonable performance.
+import dopamine.agents.dqn.dqn_agent
+import dopamine.agents.rainbow.rainbow_agent
+import dopamine.discrete_domains.gym_lib
+import dopamine.discrete_domains.run_experiment
+import dopamine.replay_memory.prioritized_replay_buffer
+import gin.tf.external_configurables
+import drl_fw.dopamine.components.park_networks
+
+ParametricRainbowAgent.observation_shape = (1681,)
+ParametricRainbowAgent.network = @park_networks.qopt_rainbow_network
+ParametricRainbowAgent.num_atoms = 51
+ParametricRainbowAgent.vmax = 10.
+ParametricRainbowAgent.gamma = 0.99
+ParametricRainbowAgent.update_horizon = 3
+ParametricRainbowAgent.min_replay_history = 500
+ParametricRainbowAgent.update_period = 1
+ParametricRainbowAgent.target_update_period = 100
+ParametricRainbowAgent.epsilon_fn = @dqn_agent.identity_epsilon
+ParametricRainbowAgent.replay_scheme = 'prioritized'
+ParametricRainbowAgent.tf_device = '/cpu:*'  # use '/cpu:*' for non-GPU version
+ParametricRainbowAgent.optimizer = @tf.train.AdamOptimizer()
+
+tf.train.AdamOptimizer.learning_rate = 0.09
+tf.train.AdamOptimizer.epsilon = 0.0003125
+
+create_gym_environment.environment_name = 'ParkQueryOptimizer'
+create_gym_environment.version = 'v0'
+create_parametric_agent.agent_name = 'parametric_rainbow'
+CheckpointRunner.create_environment_fn = @gym_lib.create_gym_environment
+CheckpointRunner.num_iterations = 1000
+CheckpointRunner.training_steps = 300
+CheckpointRunner.evaluation_steps = 500
+CheckpointRunner.max_steps_per_episode = 25  # Default max episode length.
+CheckpointRunner.checkpoint_freq = 0  # Checkpointing frequency.
+CheckpointRunner.inference_steps = 100 # Measure runtime over this number of steps
+
+WrappedReplayBuffer.replay_capacity = 50000
+WrappedReplayBuffer.batch_size = 128

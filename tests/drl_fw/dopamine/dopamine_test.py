@@ -3,7 +3,7 @@ import tensorflow as tf
 import pytest
 
 from dopamine.discrete_domains import run_experiment
-from drl_fw.dopamine import checkpoint_runner
+from drl_fw.dopamine.components import checkpoint_runner
 
 BASE_DIR = os.path.abspath('./tests/drl_fw/dopamine/test_data')
 GIN_FILES = [os.path.abspath(
