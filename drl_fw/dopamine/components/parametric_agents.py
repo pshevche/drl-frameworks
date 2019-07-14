@@ -96,10 +96,14 @@ class ParametricDQNAgent(dqn_agent.DQNAgent):
         else:
             if self.environment:
                 # Choose the action with highest Q-value at the current state.
-                unmasked_actions = self._sess.run(
-                    self._net_outputs.q_values, {self.state_ph: self.state})
+                if isinstance(self, ParametricImplicitQuantileAgent):
+                    unmasked_actions = self._sess.run(
+                        self._q_values, {self.state_ph: self.state})
+                else:
+                    unmasked_actions = self._sess.run(
+                        self._net_outputs.q_values, {self.state_ph: self.state})[0]
                 masked_actions = [v if self.environment.action_mask[i]
-                                  else -np.inf for i, v in enumerate(unmasked_actions[0])]
+                                  else -np.inf for i, v in enumerate(unmasked_actions)]
                 return np.argmax(masked_actions)
             else:
                 return tf.argmax(self._net_outputs.q_values, axis=1)[0]
@@ -139,29 +143,29 @@ class ParametricRainbowAgent(rainbow_agent.RainbowAgent, ParametricDQNAgent):
                  summary_writing_frequency=500):
         rainbow_agent.RainbowAgent.__init__(
             self,
-            sess,
-            num_actions,
-            observation_shape,
-            observation_dtype,
-            stack_size,
-            network,
-            num_atoms,
-            vmax,
-            gamma,
-            update_horizon,
-            min_replay_history,
-            update_period,
-            target_update_period,
-            epsilon_fn,
-            epsilon_train,
-            epsilon_eval,
-            epsilon_decay_period,
-            replay_scheme,
-            tf_device,
-            use_staging,
-            optimizer,
-            summary_writer,
-            summary_writing_frequency)
+            sess=sess,
+            num_actions=num_actions,
+            observation_shape=observation_shape,
+            observation_dtype=observation_dtype,
+            stack_size=stack_size,
+            network=network,
+            num_atoms=num_atoms,
+            vmax=vmax,
+            gamma=gamma,
+            update_horizon=update_horizon,
+            min_replay_history=min_replay_history,
+            update_period=update_period,
+            target_update_period=target_update_period,
+            epsilon_fn=epsilon_fn,
+            epsilon_train=epsilon_train,
+            epsilon_eval=epsilon_eval,
+            epsilon_decay_period=epsilon_decay_period,
+            replay_scheme=replay_scheme,
+            tf_device=tf_device,
+            use_staging=use_staging,
+            optimizer=optimizer,
+            summary_writer=summary_writer,
+            summary_writing_frequency=summary_writing_frequency)
         ParametricDQNAgent.__init__(
             self,
             sess=sess,
@@ -206,20 +210,21 @@ class ParametricImplicitQuantileAgent(implicit_quantile_agent.ImplicitQuantileAg
                  double_dqn=False,
                  summary_writer=None,
                  summary_writing_frequency=500):
-        super(implicit_quantile_agent.ImplicitQuantileAgent, self).__init__(
-            sess,
-            num_actions,
-            environment,
-            network,
-            kappa,
-            num_tau_samples,
-            num_tau_prime_samples,
-            num_quantile_samples,
-            quantile_embedding_dim,
-            double_dqn,
-            summary_writer,
-            summary_writing_frequency)
-        super(ParametricDQNAgent, self).__init__(
+        implicit_quantile_agent.ImplicitQuantileAgent.__init__(
+            self,
+            sess=sess,
+            num_actions=num_actions,
+            network=network,
+            kappa=kappa,
+            num_tau_samples=num_tau_samples,
+            num_tau_prime_samples=num_tau_prime_samples,
+            num_quantile_samples=num_quantile_samples,
+            quantile_embedding_dim=quantile_embedding_dim,
+            double_dqn=double_dqn,
+            summary_writer=summary_writer,
+            summary_writing_frequency=summary_writing_frequency)
+        ParametricRainbowAgent.__init__(
+            self,
             sess=sess,
             num_actions=num_actions,
             environment=environment,

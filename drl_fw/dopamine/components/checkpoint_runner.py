@@ -34,25 +34,14 @@ def create_parametric_agent(sess, environment, agent_name=None, summary_writer=N
     assert agent_name is not None
     if not debug_mode:
         summary_writer = None
-    if agent_name == 'dqn':
-        return dqn_agent.DQNAgent(sess, num_actions=environment.action_space.n,
-                                  summary_writer=summary_writer)
-    elif agent_name == 'rainbow':
-        return rainbow_agent.RainbowAgent(
-            sess, num_actions=environment.action_space.n,
-            summary_writer=summary_writer)
-    elif agent_name == 'implicit_quantile':
-        return implicit_quantile_agent.ImplicitQuantileAgent(
-            sess, num_actions=environment.action_space.n,
-            summary_writer=summary_writer)
-    elif agent_name == 'parametric_dqn':
+    if agent_name == 'parametric_dqn':
         return parametric_agents.ParametricDQNAgent(sess, num_actions=environment.action_space.n, environment=environment.environment, summary_writer=summary_writer)
     elif agent_name == 'parametric_rainbow':
         return parametric_agents.ParametricRainbowAgent(sess, num_actions=environment.action_space.n, environment=environment.environment, summary_writer=summary_writer)
     elif agent_name == 'parametric_implicit_quantile':
         return parametric_agents.ParametricImplicitQuantileAgent(sess, num_actions=environment.action_space.n, environment=environment.environment, summary_writer=summary_writer)
     else:
-        raise ValueError('Unknown agent: {}'.format(agent_name))
+        return run_experiment.create_agent(sess, environment, agent_name, summary_writer, debug_mode)
 
 
 def create_runner(base_dir):
