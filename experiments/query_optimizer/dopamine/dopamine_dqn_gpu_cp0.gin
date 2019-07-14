@@ -17,7 +17,7 @@ ParametricDQNAgent.min_replay_history = 1000
 ParametricDQNAgent.update_period = 1
 ParametricDQNAgent.target_update_period = 100
 ParametricDQNAgent.epsilon_fn = @dqn_agent.identity_epsilon
-ParametricDQNAgent.tf_device = '/cpu:*'  # use '/cpu:*' for non-GPU version
+ParametricDQNAgent.tf_device = '/gpu:0'  # use '/cpu:*' for non-GPU version
 ParametricDQNAgent.optimizer = @tf.train.AdamOptimizer()
 
 tf.train.AdamOptimizer.learning_rate = 0.0001

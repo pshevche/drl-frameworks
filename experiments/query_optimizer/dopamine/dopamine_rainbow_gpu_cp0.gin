@@ -19,7 +19,7 @@ ParametricRainbowAgent.update_period = 1
 ParametricRainbowAgent.target_update_period = 100
 ParametricRainbowAgent.epsilon_fn = @dqn_agent.identity_epsilon
 ParametricRainbowAgent.replay_scheme = 'prioritized'
-ParametricRainbowAgent.tf_device = '/cpu:*'  # use '/cpu:*' for non-GPU version
+ParametricRainbowAgent.tf_device = '/gpu:0'  # use '/cpu:*' for non-GPU version
 ParametricRainbowAgent.optimizer = @tf.train.AdamOptimizer()
 
 tf.train.AdamOptimizer.learning_rate = 0.09
