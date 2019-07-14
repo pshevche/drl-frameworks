@@ -95,15 +95,12 @@ class ParametricDQNAgent(dqn_agent.DQNAgent):
                 return random.randint(0, self.num_actions - 1)
         else:
             if self.environment:
-                unmasked_actions = tf.constant(
-                    np.zeros(self.environment.action_mask.shape))
                 # Choose the action with highest Q-value at the current state.
                 unmasked_actions = self._sess.run(
                     self._net_outputs.q_values, {self.state_ph: self.state})
-                masked_actions = np.multiply(
-                    unmasked_actions, self.environment.action_mask)
-                res = np.argmax(abs(masked_actions))
-                return res
+                masked_actions = [v if self.environment.action_mask[i]
+                                  else -np.inf for i, v in enumerate(unmasked_actions[0])]
+                return np.argmax(masked_actions)
             else:
                 return tf.argmax(self._net_outputs.q_values, axis=1)[0]
 
