@@ -22,7 +22,7 @@ ray_rainbow_cpu_cp0:
     gamma: 0.99
     hiddens: [512]
     learning_starts: 1000
-    lr: .09
+    lr: .0009
     noisy: False
     num_atoms: 51
     num_workers: 0

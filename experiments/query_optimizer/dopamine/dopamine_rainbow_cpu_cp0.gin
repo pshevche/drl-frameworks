@@ -22,7 +22,7 @@ ParametricRainbowAgent.replay_scheme = 'prioritized'
 ParametricRainbowAgent.tf_device = '/cpu:*'  # use '/cpu:*' for non-GPU version
 ParametricRainbowAgent.optimizer = @tf.train.AdamOptimizer()
 
-tf.train.AdamOptimizer.learning_rate = 0.09
+tf.train.AdamOptimizer.learning_rate = 0.0009
 tf.train.AdamOptimizer.epsilon = 0.0003125
 
 create_gym_environment.environment_name = 'ParkQueryOptimizer'

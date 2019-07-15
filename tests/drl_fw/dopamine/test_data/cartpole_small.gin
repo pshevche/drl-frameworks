@@ -19,7 +19,7 @@ DQNAgent.epsilon_fn = @dqn_agent.identity_epsilon
 DQNAgent.tf_device = '/cpu:*'  # use '/cpu:*' for non-GPU version
 DQNAgent.optimizer = @tf.train.AdamOptimizer()
 
-tf.train.AdamOptimizer.learning_rate = 0.001
+tf.train.AdamOptimizer.learning_rate = 0.0001
 tf.train.AdamOptimizer.epsilon = 0.0003125
 
 create_gym_environment.environment_name = 'CartPole'
