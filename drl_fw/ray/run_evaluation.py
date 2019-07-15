@@ -13,7 +13,7 @@ import yaml
 import ray
 from ray.tune.config_parser import make_parser
 
-from drl_fw.ray.custom_trainer import get_agent_class
+from drl_fw.ray.components.custom_trainer import get_agent_class
 from drl_fw.tensorboard.custom_tensorboard import Tensorboard
 
 EXAMPLE_USAGE = """

@@ -3,7 +3,7 @@ import pytest
 import ray
 import yaml
 
-from drl_fw.ray.custom_trainer import get_agent_class
+from drl_fw.ray.components.custom_trainer import get_agent_class
 from drl_fw.tensorboard.custom_tensorboard import Tensorboard
 
 CONFIG_FILE = os.path.abspath(
