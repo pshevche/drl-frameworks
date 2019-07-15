@@ -1,6 +1,7 @@
 .vscode/
 **/results/**
 **/__pycache__/**
+.pytest_cache
 **/*egg-info*/**
 **/test_data/**
 !**/test_data/cartpole_small*
