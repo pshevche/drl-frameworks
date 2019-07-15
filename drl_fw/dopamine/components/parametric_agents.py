@@ -96,12 +96,14 @@ class ParametricDQNAgent(dqn_agent.DQNAgent):
         else:
             if self.environment:
                 # Choose the action with highest Q-value at the current state.
+                # Implicit quantile agent stores raw Q-values differently than other DQN-based agents.
                 if isinstance(self, ParametricImplicitQuantileAgent):
                     unmasked_actions = self._sess.run(
                         self._q_values, {self.state_ph: self.state})
                 else:
                     unmasked_actions = self._sess.run(
                         self._net_outputs.q_values, {self.state_ph: self.state})[0]
+                # map Q-values of invalid actions to -infinity instead of zero (supports negative Q-values)
                 masked_actions = [v if self.environment.action_mask[i]
                                   else -np.inf for i, v in enumerate(unmasked_actions)]
                 return np.argmax(masked_actions)
