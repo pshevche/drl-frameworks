@@ -1,12 +1,12 @@
 import gym
-from park.envs.query_optimizer.query_optimizer import QueryOptEnv
+from park.envs.query_optimizer import QueryOptEnv
 from gym import spaces
 import numpy as np
 
 IMBD_TABLES_COUNT = 21
 
 
-class ParkQueryOptimizer(gym.Env):
+class ParkQOptEnv(gym.Env):
     """
     Wrapper around Park's Query Optimizer environment. 
     Key differences: 

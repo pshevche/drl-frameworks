@@ -23,7 +23,7 @@ ParametricDQNAgent.optimizer = @tf.train.AdamOptimizer()
 tf.train.AdamOptimizer.learning_rate = 0.0001
 tf.train.AdamOptimizer.epsilon = 0.0003125
 
-create_gym_environment.environment_name = 'ParkQueryOptimizer'
+create_gym_environment.environment_name = 'ParkQOptEnv'
 create_gym_environment.version = 'v0'
 create_parametric_agent.agent_name = 'parametric_dqn'
 CheckpointRunner.create_environment_fn = @gym_lib.create_gym_environment

@@ -7,7 +7,7 @@ from ray.rllib.models.preprocessors import get_preprocessor
 from ray.rllib.evaluation.sample_batch_builder import SampleBatchBuilder
 from ray.rllib.offline.json_writer import JsonWriter
 
-from drl_fw.envs.query_optimizer import ParkQueryOptimizer
+from drl_fw.envs.park_qopt_env import ParkQOptEnv
 
 
 def create_parser():
@@ -35,7 +35,7 @@ def main(args):
     writer = JsonWriter(path)
 
     # works only for local version of Park's qopt env
-    env = gym.make('ParkQueryOptimizer-v0')
+    env = gym.make('ParkQOptEnv-v0')
     nodes_count = env.total_nodes
     park_env = env.park_env
 

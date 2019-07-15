@@ -73,7 +73,7 @@ def run(args, parser):
 
     start_time = time.time()
     for iteration in range(num_iterations):
-            # train agent
+        # train agent
         train_result = agent.train()
         timesteps_history.append(train_result["timesteps_total"])
         average_reward_train.append(train_result["episode_reward_mean"])
