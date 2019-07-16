@@ -14,9 +14,9 @@ class RayParkQOptEnv(gym.Env):
         self.wrapped = ParkQOptEnv()
         self.action_space = self.wrapped.action_space
         self.observation_space = Dict({
-            "action_mask": Box(low=0.0, high=1.0, shape=(self.wrapped.total_nodes*self.wrapped.total_nodes,)),
-            "avail_actions": Box(low=0.0, high=1.0, shape=(self.wrapped.total_nodes*self.wrapped.total_nodes,)),
-            "graph": Box(low=0.0, high=1.0, shape=(self.wrapped.total_nodes*self.wrapped.total_nodes,))
+            "action_mask": Box(low=0.0, high=1.0, shape=(self.total_nodes*self.total_nodes,)),
+            "avail_actions": Box(low=0.0, high=1.0, shape=(self.total_nodes*self.total_nodes,)),
+            "graph": Box(low=0.0, high=1.0, shape=(self.total_nodes*self.total_nodes,))
         })
 
     def reset(self):
@@ -35,3 +35,11 @@ class RayParkQOptEnv(gym.Env):
             "graph": orig_obs
         }
         return obs, reward, done, info
+
+    @property
+    def total_nodes(self):
+        return self.wrapped.total_nodes
+
+    @property
+    def park_env(self):
+        return self.wrapped.park_env

@@ -7,7 +7,7 @@ from ray.rllib.models.preprocessors import get_preprocessor
 from ray.rllib.evaluation.sample_batch_builder import SampleBatchBuilder
 from ray.rllib.offline.json_writer import JsonWriter
 
-from drl_fw.envs.park_qopt_env import ParkQOptEnv
+from drl_fw.envs.ray_park_qopt_env import RayParkQOptEnv
 
 
 def create_parser():
@@ -35,7 +35,7 @@ def main(args):
     writer = JsonWriter(path)
 
     # works only for local version of Park's qopt env
-    env = gym.make('ParkQOptEnv-v0')
+    env = gym.make('RayParkQOptEnv-v0')
     nodes_count = env.total_nodes
     park_env = env.park_env
 
@@ -52,6 +52,7 @@ def main(args):
         prev_reward = 0
         done = False
         while not done:
+            edge_count = park_env.graph.graph.number_of_edges()
             action = edge_to_discrete(
                 park_env.action_space.sample(), nodes_count)
             new_obs, rew, done, info = env.step(action)
@@ -61,7 +62,8 @@ def main(args):
                 agent_index=0,
                 obs=prep.transform(obs),
                 actions=action,
-                action_prob=1.0,  # put the true action probability here
+                # put the true action probability here
+                action_prob=0.0 if edge_count == 0 else 1.0 / edge_count,
                 rewards=rew,
                 prev_actions=prev_action,
                 prev_rewards=prev_reward,
