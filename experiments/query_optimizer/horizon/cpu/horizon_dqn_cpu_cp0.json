@@ -37,7 +37,7 @@
         "max_steps": 200,
         "train_every_ts": 1,
         "train_after_ts": 1,
-        "test_every_ts": 20,
+        "test_every_ts": 30,
         "test_after_ts": 1,
         "num_train_batches": 1,
         "avg_over_num_episodes": 100,

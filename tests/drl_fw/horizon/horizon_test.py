@@ -5,7 +5,7 @@ import pytest
 
 from ml.rl.test.gym import run_gym as horizon_runner
 from ml.rl.training.rl_dataset import RLDataset
-from drl_fw.horizon.custom_trainer import custom_train
+from drl_fw.horizon.components.custom_workflow import custom_train
 from drl_fw.tensorboard.custom_tensorboard import Tensorboard
 
 horizon_runner.train = custom_train

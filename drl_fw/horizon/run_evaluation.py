@@ -9,8 +9,10 @@ import time
 import tensorflow as tf
 import io
 
-from drl_fw.horizon.custom_trainer import custom_train
+from drl_fw.horizon.components.custom_workflow import custom_train
 from drl_fw.tensorboard.custom_tensorboard import Tensorboard
+from drl_fw.horizon.components.custom_workflow import create_park_trainer
+from drl_fw.horizon.components.custom_workflow import create_park_predictor
 from ml.rl.training.rl_dataset import RLDataset
 from ml.rl.test.gym import run_gym as horizon_runner
 from ml.rl.test.base.utils import write_lists_to_csv
@@ -22,6 +24,8 @@ from ml.rl.thrift.core.ttypes import RLParameters
 USE_CPU = -1
 logger = logging.getLogger(__name__)
 horizon_runner.train = custom_train
+horizon_runner.create_trainer = create_park_trainer
+horizon_runner.create_predictor = create_park_predictor
 
 
 def create_parser():
