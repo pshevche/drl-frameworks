@@ -1,7 +1,7 @@
 cartpole_small:
   run: DQN
   env: CartPole-v0
-  local_dir: "tests/drl_fw/ray/test_data" 
+  local_dir: "test/drl_fw/ray/test_data" 
   checkpoint_freq: 1
   checkpoint_at_end: False 
   agent_training_steps: 100

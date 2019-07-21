@@ -50,7 +50,7 @@ RUN wget https://archive.apache.org/dist/spark/spark-2.3.3/spark-2.3.3-bin-hadoo
 ADD ./config drl-frameworks/config
 ADD ./scripts drl-frameworks/scripts
 ADD ./lib drl-frameworks/lib
-ADD ./scripts/build_project.sh /usr/local/bin/on_start.sh
+ADD ./scripts/docker/on_start.sh /usr/local/bin/on_start.sh
 RUN chmod 777 /usr/local/bin/on_start.sh
 
 # Set up project environment

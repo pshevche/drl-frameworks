@@ -5,9 +5,9 @@ import pytest
 from dopamine.discrete_domains import run_experiment
 from drl_fw.dopamine.components import checkpoint_runner
 
-BASE_DIR = os.path.abspath('./tests/drl_fw/dopamine/test_data')
+BASE_DIR = os.path.abspath('./test/drl_fw/dopamine/test_data')
 GIN_FILES = [os.path.abspath(
-    './tests/drl_fw/dopamine/test_data/cartpole_small.gin')]
+    './test/drl_fw/dopamine/test_data/cartpole_small.gin')]
 
 
 class TestDopamine(object):

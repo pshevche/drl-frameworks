@@ -16,11 +16,11 @@ horizon_runner.create_trainer = create_park_trainer
 horizon_runner.create_predictor = create_park_predictor
 
 PARAMETERS = os.path.abspath(
-    './tests/drl_fw/horizon/test_data/cartpole_small.json')
+    './test/drl_fw/horizon/test_data/cartpole_small.json')
 FILE_PATH = os.path.abspath(
-    './tests/drl_fw/dopamine/test_data/checkpoints.json')
+    './test/drl_fw/dopamine/test_data/checkpoints.json')
 EVALUATION_PATH = os.path.abspath(
-    './tests/drl_fw/dopamine/test_data')
+    './test/drl_fw/dopamine/test_data')
 
 
 class TestHorizon(object):

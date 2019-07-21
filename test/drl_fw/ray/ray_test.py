@@ -7,7 +7,7 @@ from drl_fw.ray.components.custom_trainer import get_agent_class
 from drl_fw.tensorboard.custom_tensorboard import Tensorboard
 
 CONFIG_FILE = os.path.abspath(
-    './tests/drl_fw/ray/test_data/cartpole_small.yml')
+    './test/drl_fw/ray/test_data/cartpole_small.yml')
 
 
 class TestRay(object):
