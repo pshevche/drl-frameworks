@@ -5,10 +5,15 @@ import pytest
 
 from ml.rl.test.gym import run_gym as horizon_runner
 from ml.rl.training.rl_dataset import RLDataset
-from drl_fw.horizon.components.custom_workflow import custom_train
+from drl_fw.horizon.components.custom_workflow import (
+    custom_train,
+    create_park_trainer,
+    create_park_predictor)
 from drl_fw.tensorboard.custom_tensorboard import Tensorboard
 
 horizon_runner.train = custom_train
+horizon_runner.create_trainer = create_park_trainer
+horizon_runner.create_predictor = create_park_predictor
 
 PARAMETERS = os.path.abspath(
     './tests/drl_fw/horizon/test_data/cartpole_small.json')
