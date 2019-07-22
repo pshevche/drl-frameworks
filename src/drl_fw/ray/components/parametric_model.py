@@ -13,7 +13,6 @@ class ParametricActionsModel(Model):
 
     def _build_layers_v2(self, input_dict, num_outputs, options):
         action_mask = input_dict["obs"]["action_mask"]
-        avail_actions = input_dict["obs"]["avail_actions"]
 
         # Standard FC net component.
         last_layer = input_dict["obs"]["graph"]
@@ -28,7 +27,7 @@ class ParametricActionsModel(Model):
                 name=label)
         output = tf.layers.dense(
             last_layer,
-            avail_actions.shape[1].value,
+            1,
             kernel_initializer=normc_initializer(0.01),
             activation=None,
             name="fc_out")
@@ -36,6 +35,7 @@ class ParametricActionsModel(Model):
         # Expand the model output to [BATCH, 1, EMBED_SIZE]. Note that the
         # avail actions tensor is of shape [BATCH, MAX_ACTIONS, EMBED_SIZE].
         intent_vector = tf.expand_dims(output, 1)
+        avail_actions = tf.expand_dims(action_mask, 2)
 
         # Batch dot product => shape of logits is [BATCH, MAX_ACTIONS].
         action_logits = tf.reduce_sum(avail_actions * intent_vector, axis=2)

@@ -111,7 +111,7 @@ def run(args, parser):
     # inference testing
     try:
         inference_steps = experiment_info["inference_steps"]
-        print("--- STARTING RAY CARTPOLE INFERENCE EXPERIMENT ---")
+        print("--- STARTING RAY INFERENCE EXPERIMENT ---")
         orig_ts_per_iter = agent.evaluation_steps
         agent.evaluation_steps = inference_steps
         start_time = time.time()
@@ -124,7 +124,7 @@ def run(args, parser):
                 str(end_time - start_time) + '\n')
         f.close()
         agent.evaluation_steps = orig_ts_per_iter
-        print("--- RAY CARTPOLE INFERENCE EXPERIMENT COMPLETED ---")
+        print("--- RAY INFERENCE EXPERIMENT COMPLETED ---")
     except KeyError:
         pass
 

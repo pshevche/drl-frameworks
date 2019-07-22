@@ -55,7 +55,7 @@ RUN chmod 777 /usr/local/bin/on_start.sh
 
 # Set up project environment
 WORKDIR ${HOME}/drl-frameworks
-RUN bash ./scripts/setup_env.sh
+RUN bash ./scripts/docker/setup_docker_env.sh
 
 # Define default command.
 CMD /usr/local/bin/on_start.sh
