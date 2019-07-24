@@ -67,39 +67,33 @@ def run(args, parser):
     agent = agent_class(env=env_name, config=config,
                         training_steps=training_steps, evaluation_steps=evaluation_steps)
 
-    average_reward_train, train_episodes = [], []
-    average_reward_eval, eval_episodes = [], []
-    timesteps_history = []
+    # log results to tensorboard
+    tensorboard = Tensorboard(os.path.join(results_dir, experiment_name))
 
     start_time = time.time()
     for iteration in range(num_iterations):
         # train agent
         train_result = agent.train()
-        timesteps_history.append(train_result["timesteps_total"])
-        average_reward_train.append(train_result["episode_reward_mean"])
-        train_episodes.append(train_result["episodes_this_iter"])
+        average_reward_train = train_result["episode_reward_mean"]
+        train_episodes = train_result["episodes_this_iter"]
 
         # evaluate agent
         eval_result = agent._evaluate()
-        average_reward_eval.append(
-            eval_result["evaluation"]["episode_reward_mean"])
-        eval_episodes.append(eval_result["evaluation"]["episodes_this_iter"])
+        average_reward_eval = eval_result["evaluation"]["episode_reward_mean"]
+        eval_episodes = eval_result["evaluation"]["episodes_this_iter"]
 
         # checkpoint agent's state
         if checkpoint_freq != 0 and iteration % checkpoint_freq == 0:
             agent.save(checkpoint_dir)
 
+        # publish tensorboard summary
+        tensorboard.log_summary(
+            average_reward_train, train_episodes, average_reward_eval, eval_episodes, iteration)
+
     # checkpoint agent's last state
     if checkpoint_at_end:
         agent.save(checkpoint_dir)
     end_time = time.time()
-
-    # log results to tensorboard
-    tensorboard = Tensorboard(os.path.join(results_dir, experiment_name))
-    for i in range(len(average_reward_eval)):
-        tensorboard.log_summary(
-            average_reward_train[i], train_episodes[i], average_reward_eval[i], eval_episodes[i], i)
-    tensorboard.close()
 
     # save runtime
     runtime_file = os.path.join(results_dir, 'runtime', 'runtime.csv')

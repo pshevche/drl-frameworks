@@ -1,5 +1,10 @@
 from ray.rllib.models import ModelCatalog
-from drl_fw.ray.components.parametric_model import ParametricActionsModel
+from drl_fw.ray.components.parametric_models import (
+    ParametricDQNModel,
+    ParametricRainbowModel)
 
 ModelCatalog.register_custom_model(
-    "parametric_actions_model", ParametricActionsModel)
+    "parametric_dqn_model", ParametricDQNModel)
+
+ModelCatalog.register_custom_model(
+    "parametric_rainbow_model", ParametricRainbowModel)

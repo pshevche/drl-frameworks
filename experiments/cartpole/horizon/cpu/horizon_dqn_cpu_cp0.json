@@ -44,7 +44,6 @@
         "avg_over_num_steps": 1000,
         "offline_train_epochs": 30,
         "timesteps_total": 500000,
-        "checkpoint_after_ts": 0,
-        "num_inference_steps": 100000
+        "checkpoint_after_ts": 0
     }
 }

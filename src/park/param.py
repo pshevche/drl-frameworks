@@ -18,7 +18,8 @@ parser.add_argument('--num_servers', type=int, default=10,
 parser.add_argument('--num_stream_jobs', type=int, default=1000,
                     help='number of streaming jobs (default: 1000)')
 parser.add_argument('--service_rates', type=float,
-                    default=[0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95, 1.05],
+                    default=[0.15, 0.25, 0.35, 0.45, 0.55,
+                             0.65, 0.75, 0.85, 0.95, 1.05],
                     nargs='+', help='workers service rates '
                     '(default: [0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95, 1.05])')
 parser.add_argument('--job_interval', type=int, default=55,
@@ -65,9 +66,9 @@ parser.add_argument('--qopt_viz', type=int, default=0,
 
 # parameters to be passed to the calcite backend
 # parser.add_argument('--qopt_eval_runtime', type=int, default=0,
-                    # help="execute query plan on db, to get runtimes, when evaluating")
+# help="execute query plan on db, to get runtimes, when evaluating")
 # parser.add_argument('--qopt_train_runtime', type=int, default=0,
-                    # help="train using runtimes from DB")
+# help="train using runtimes from DB")
 
 parser.add_argument('--qopt_port', type=int, default=2654,
                     help="port for communicaton with calcite backend")
@@ -77,36 +78,36 @@ parser.add_argument('--qopt_train', type=int, default=1,
                     help="""0 or 1. To run in training mode or test mode. Check
                     the calcite backend for more description of the two
                     modes.""")
-parser.add_argument('--qopt_final_reward', type=int,default=0,
+parser.add_argument('--qopt_final_reward', type=int, default=0,
                     help="""0 or 1. If true, then the final reward will be
                     returned.""")
-parser.add_argument('--qopt_no_intermediate_reward', type=int,default=0,
+parser.add_argument('--qopt_no_intermediate_reward', type=int, default=0,
                     help="""0 or 1.""")
-parser.add_argument('--qopt_lopt', type=int,default=0, help="0 or 1")
-parser.add_argument('--qopt_exh', type=int,default=0, help="0 or 1")
-parser.add_argument('--qopt_verbose', type=int,default=0, help="0 or 1")
-parser.add_argument('--qopt_left_deep', type=int,default=0, help="0 or 1")
+parser.add_argument('--qopt_lopt', type=int, default=0, help="0 or 1")
+parser.add_argument('--qopt_exh', type=int, default=0, help="0 or 1")
+parser.add_argument('--qopt_verbose', type=int, default=0, help="0 or 1")
+parser.add_argument('--qopt_left_deep', type=int, default=0, help="0 or 1")
 parser.add_argument('--qopt_only_attr_features', type=int, required=False,
-                            default=1, help='')
+                    default=1, help='')
 
 parser.add_argument('--qopt_reward_normalization', type=str, required=False,
-                            default='', help='type of reward normalization')
+                    default='min_max', help='type of reward normalization')
 parser.add_argument('--qopt_cost_model', type=str, required=False,
-                            default='rowCount', help='')
+                    default='rowCount', help='')
 parser.add_argument('--qopt_dataset', type=str, required=False,
-                            default='JOB', help='')
+                    default='JOB', help='')
 parser.add_argument('--qopt_clear_cache', type=int, required=False,
-                            default=1, help='')
+                    default=1, help='')
 parser.add_argument('--qopt_recompute_fixed_planners', type=int, required=False,
-                            default=0, help='')
+                    default=0, help='')
 parser.add_argument('--qopt_test_size', type=float, required=False,
-                            default=0.5, help='')
+                    default=0.5, help='')
 parser.add_argument('--qopt_test_seed', type=int, required=False,
-                            default=1234, help='')
+                    default=1234, help='')
 parser.add_argument('--qopt_num_execution_reps', type=int, required=False,
-                            default=1, help='')
+                    default=1, help='')
 parser.add_argument('--qopt_max_execution_time', type=int, required=False,
-                            default=1200, help='')
+                    default=1200, help='')
 
 # -- Cache --
 parser.add_argument('--cache_trace', type=str, required=False, default='test',

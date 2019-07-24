@@ -6,6 +6,7 @@ ray_rainbow_gpu_cp0:
   checkpoint_at_end: False 
   agent_training_steps: 1000
   agent_evaluation_steps: 1000
+  inference_steps: 1000
   # number of iterations
   stop:
     training_iteration: 500

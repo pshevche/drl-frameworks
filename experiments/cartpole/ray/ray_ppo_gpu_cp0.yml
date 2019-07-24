@@ -6,6 +6,7 @@ ray_ppo_gpu_cp0:
   checkpoint_at_end: False 
   agent_training_steps: 1000
   agent_evaluation_steps: 1000
+  inference_steps: 1000
   # number of iterations
   stop:
     training_iteration: 500
@@ -15,6 +16,8 @@ ray_ppo_gpu_cp0:
     evaluation_interval: 1000000
     lr: 0.0001
     num_cpus_for_driver: 0
-    num_gpus: 1
-    num_workers: 0
+    num_gpus: 0
+    num_workers: 5
+    num_gpus_per_worker: 0.2
+    num_cpus_per_worker: 0
     train_batch_size: 128
