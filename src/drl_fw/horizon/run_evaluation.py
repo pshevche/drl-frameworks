@@ -10,7 +10,6 @@ import tensorflow as tf
 import io
 
 from drl_fw.horizon.components.custom_workflow import custom_train
-from drl_fw.tensorboard.custom_tensorboard import Tensorboard
 from drl_fw.horizon.components.custom_workflow import create_park_trainer
 from drl_fw.horizon.components.custom_workflow import create_park_predictor
 from ml.rl.training.rl_dataset import RLDataset
@@ -107,6 +106,15 @@ def main(args):
     # train agent
     dataset = RLDataset(
         args.file_path) if checkpoint_freq != 0 and args.file_path else None
+
+    # log experiment info to Tensorboard
+    evaluation_file = args.evaluation_file_path
+    config_file = args.parameters.strip()
+    experiment_name = config_file[config_file.rfind(
+        '/') + 1: config_file.rfind('.json')]
+    os.environ["TENSORBOARD_DIR"] = os.path.join(
+        evaluation_file, experiment_name)
+
     start_time = time.time()
     average_reward_train, num_episodes_train, average_reward_eval, num_episodes_eval, timesteps_history, trainer, predictor, env = horizon_runner.run_gym(
         params,
@@ -121,18 +129,6 @@ def main(args):
     if dataset:
         dataset.save()
     end_time = time.time()
-
-    # log experiment info to Tensorboard
-    evaluation_file = args.evaluation_file_path
-    config_file = args.parameters.strip()
-    experiment_name = config_file[config_file.rfind(
-        '/') + 1: config_file.rfind('.json')]
-
-    tensorboard = Tensorboard(os.path.join(evaluation_file, experiment_name))
-    for i in range(0, len(average_reward_eval)):
-        tensorboard.log_summary(
-            average_reward_train[i], num_episodes_train[i], average_reward_eval[i], num_episodes_eval[i], i)
-    tensorboard.close()
 
     # save runtime
     runtime_file = os.path.join(evaluation_file, 'runtime', 'runtime.csv')

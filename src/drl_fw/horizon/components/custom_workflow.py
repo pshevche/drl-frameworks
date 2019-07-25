@@ -1,6 +1,7 @@
+import io
 import logging
 import numpy as np
-import io
+import os
 import torch
 from typing import Dict
 
@@ -44,6 +45,7 @@ from drl_fw.horizon.components.park_trainers import (
     ParkDQNTrainer,
 )
 from drl_fw.horizon.components.park_predictors import ParkDQNPredictor
+from drl_fw.tensorboard.custom_tensorboard import Tensorboard
 
 logger = logging.getLogger(__name__)
 
@@ -415,6 +417,7 @@ def custom_train_gym_online_rl(
     avg_over_num_steps
 ):
     """Train off of dynamic set of transitions generated on-policy."""
+    tensorboard = Tensorboard(os.environ["TENSORBOARD_DIR"])
     ep_i = 0
     ts = 0
     policy_id = 0
@@ -527,13 +530,19 @@ def custom_train_gym_online_rl(
                 )
 
                 # save Tensorboard statistics
-                timesteps_history.append(ts)
                 avg_train_reward = sum(
                     reward_hist) / len(reward_hist) if len(reward_hist) != 0 else 0
+                num_train_ep = len(reward_hist)
+                avg_eval_reward = avg_rewards
+                num_eval_ep = avg_ep_count
+                tensorboard.log_summary(
+                    avg_train_reward, num_train_ep, avg_eval_reward, num_eval_ep, ts // test_every_ts - 1)
+
+                timesteps_history.append(ts)
                 average_reward_train.append(avg_train_reward)
-                num_episodes_train.append(len(reward_hist))
-                average_reward_eval.append(avg_rewards)
-                num_episodes_eval.append(avg_ep_count)
+                num_episodes_train.append(num_train_ep)
+                average_reward_eval.append(avg_eval_reward)
+                num_episodes_eval.append(num_eval_ep)
 
                 logger.info(
                     "Achieved an average reward score of {} over {} evaluations."
@@ -580,12 +589,19 @@ def custom_train_gym_online_rl(
             )
 
             # save Tensorboard statistics
+            avg_train_reward = sum(
+                reward_hist) / len(reward_hist) if len(reward_hist) != 0 else 0
+            num_train_ep = len(reward_hist)
+            avg_eval_reward = avg_rewards
+            num_eval_ep = avg_ep_count
+            tensorboard.log_summary(
+                avg_train_reward, num_train_ep, avg_eval_reward, num_eval_ep, ts // test_every_ts - 1)
+
             timesteps_history.append(ts)
-            avg_train_reward = sum(reward_hist) / len(reward_hist)
             average_reward_train.append(avg_train_reward)
-            num_episodes_train.append(len(reward_hist))
-            average_reward_eval.append(avg_rewards)
-            num_episodes_eval.append(avg_ep_count)
+            num_episodes_train.append(num_train_ep)
+            average_reward_eval.append(avg_eval_reward)
+            num_episodes_eval.append(num_eval_ep)
 
             logger.info(
                 "Achieved an average reward score of {} over {} evaluations."

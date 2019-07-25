@@ -9,7 +9,7 @@
         "maxq_learning": 1,
         "epsilon": 0.0003125,
         "temperature": 0.35,
-        "softmax_policy": 0
+        "softmax_policy": 1
     },
     "rainbow": {
         "double_q_learning": false,

@@ -9,7 +9,7 @@
         "maxq_learning": 1,
         "epsilon": 0.0003125,
         "temperature": 0.35,
-        "softmax_policy": 0
+        "softmax_policy": 1
     },
     "rainbow": {
         "double_q_learning": false,
@@ -18,8 +18,8 @@
     "training": {
         "layers": [
             -1,
-            128,
-            64,
+            512,
+            512,
             -1
         ],
         "activations": [
@@ -36,7 +36,7 @@
         "num_episodes": 1e6,
         "max_steps": 200,
         "train_every_ts": 1,
-        "train_after_ts": 1,
+        "train_after_ts": 1000,
         "test_every_ts": 300,
         "test_after_ts": 1,
         "num_train_batches": 1,
