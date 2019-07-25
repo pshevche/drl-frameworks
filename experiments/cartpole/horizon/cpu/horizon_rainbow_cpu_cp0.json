@@ -26,7 +26,7 @@
             "linear"
         ],
         "minibatch_size": 128,
-        "learning_rate": 0.0009,
+        "learning_rate": 0.0001,
         "optimizer": "ADAM",
         "lr_decay": 0.999
     },
