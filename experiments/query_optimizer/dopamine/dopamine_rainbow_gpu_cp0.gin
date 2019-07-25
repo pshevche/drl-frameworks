@@ -22,7 +22,7 @@ ParametricRainbowAgent.replay_scheme = 'prioritized'
 ParametricRainbowAgent.tf_device = '/gpu:0'  # use '/cpu:*' for non-GPU version
 ParametricRainbowAgent.optimizer = @tf.train.AdamOptimizer()
 
-tf.train.AdamOptimizer.learning_rate = 0.0009
+tf.train.AdamOptimizer.learning_rate = 0.0001
 tf.train.AdamOptimizer.epsilon = 0.0003125
 
 create_gym_environment.environment_name = 'ParkQOptEnv'
@@ -34,6 +34,7 @@ CheckpointRunner.training_steps = 300
 CheckpointRunner.evaluation_steps = 500
 CheckpointRunner.max_steps_per_episode = 25  # Default max episode length.
 CheckpointRunner.checkpoint_freq = 0  # Checkpointing frequency.
+CheckpointRunner.inference_steps = 1000 # Measure runtime over this number of steps
 
 WrappedReplayBuffer.replay_capacity = 50000
 WrappedReplayBuffer.batch_size = 128
