@@ -74,6 +74,17 @@ class CustomDQNTrainer(dqn.DQNTrainer):
         return {"evaluation": metrics}
 
 
+class CustomApexTrainer(CustomDQNTrainer, dqn.ApexTrainer):
+    def __init__(self, config=None, env=None, logger_creator=None, training_steps=1000, evaluation_steps=1000):
+        CustomDQNTrainer.__init__(
+            self, config, env, logger_creator, training_steps, evaluation_steps)
+        dqn.ApexTrainer.__init__(self, config, env, logger_creator)
+
+    @override(CustomDQNTrainer)
+    def update_target_if_needed(self):
+        return dqn.ApexTrainer.update_target_if_needed(self)
+
+
 class CustomPPOTrainer(ppo.PPOTrainer):
     """
     Overrides PPOTrainer from RLLib. Main difference: evaluation is performed step-wise, not episode-wise. 
@@ -153,7 +164,8 @@ class CustomPPOTrainer(ppo.PPOTrainer):
 
 CUSTOM_ALGORITHMS = {
     "DQN": CustomDQNTrainer,
-    "PPO": CustomPPOTrainer
+    "PPO": CustomPPOTrainer,
+    "APEX": CustomApexTrainer
 }
 
 

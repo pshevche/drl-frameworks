@@ -1,0 +1,25 @@
+ray_apex_gpu_cp0:
+  run: APEX
+  env: CartPole-v0
+  local_dir: "results/cartpole"  
+  checkpoint_freq: 0
+  checkpoint_at_end: False 
+  agent_training_steps: 1000
+  agent_evaluation_steps: 1000
+  inference_steps: 1000
+  # number of iterations
+  stop:
+    training_iteration: 500
+  # all other hyperparameters 
+  config:
+    adam_epsilon: 0.0003125
+    buffer_size: 50000
+    dueling: False
+    double_q: False 
+    # we want to evaluate manually, but still need the evaluator
+    evaluation_interval: 1000000
+    lr: 0.0001
+    num_gpus: 1
+    num_workers: 4
+    prioritized_replay: False
+    train_batch_size: 128
