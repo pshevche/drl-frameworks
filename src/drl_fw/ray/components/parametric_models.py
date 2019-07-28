@@ -84,23 +84,23 @@ class ParametricRainbowModel(Model):
             tensor=action_scores, shape=(-1, num_actions, num_atoms))
         support_prob_per_action = tf.nn.softmax(
             logits=support_logits_per_action)
-        output = tf.reduce_sum(
+        action_scores = tf.reduce_sum(
             input_tensor=z * support_prob_per_action, axis=-1)
 
-        # # dueling architecture
-        # state_score = tf.layers.dense(
-        #     last_layer, units=num_atoms, activation=None)
-        # support_logits_per_action_mean = tf.reduce_mean(
-        #     support_logits_per_action, 1)
-        # support_logits_per_action_centered = (
-        #     support_logits_per_action - tf.expand_dims(
-        #         support_logits_per_action_mean, 1))
-        # support_logits_per_action = tf.expand_dims(
-        #     state_score, 1) + support_logits_per_action_centered
-        # support_prob_per_action = tf.nn.softmax(
-        #     logits=support_logits_per_action)
-        # output = tf.reduce_sum(
-        #     input_tensor=z * support_prob_per_action, axis=-1)
+        # dueling architecture
+        state_score = tf.layers.dense(
+            last_layer, units=num_atoms, activation=None)
+        support_logits_per_action_mean = tf.reduce_mean(
+            support_logits_per_action, 1)
+        support_logits_per_action_centered = (
+            support_logits_per_action - tf.expand_dims(
+                support_logits_per_action_mean, 1))
+        support_logits_per_action = tf.expand_dims(
+            state_score, 1) + support_logits_per_action_centered
+        support_prob_per_action = tf.nn.softmax(
+            logits=support_logits_per_action)
+        output = tf.reduce_sum(
+            input_tensor=z * support_prob_per_action, axis=-1)
 
         # Mask out invalid actions (use tf.float32.min for stability)
         inf_mask = tf.maximum(tf.log(action_mask), tf.float32.min)
