@@ -4,37 +4,32 @@ ray_rainbow_gpu_cp0:
   local_dir: "results/query_optimizer" 
   checkpoint_freq: 0
   checkpoint_at_end: False 
-  agent_training_steps: 20
-  agent_evaluation_steps: 20
+  agent_training_steps: 300
+  agent_evaluation_steps: 500
+  inference_steps: 1000
   # number of iterations
   stop:
-    training_iteration: 10
+    training_iteration: 1000
   # all other hyperparameters 
   config:
     adam_epsilon: 0.0003125
-    beta_annealing_fraction: 0.2
     buffer_size: 50000
+    # we manually create dueling architecture
+    dueling: False
     # we want to evaluate manually, but still need the evaluator
     evaluation_interval: 1000000
-    exploration_final_eps: 0.0
-    exploration_fraction: .000001
-    final_prioritized_replay_beta: 1.0
-    gamma: 0.99
-    learning_starts: 20
-    lr: .0009
-    noisy: False
-    num_atoms: 51
+    learning_starts: 500
+    lr: 0.0001
+    # we manually create a network for distributed learning
+    num_atoms: 1
     num_cpus_for_driver: 0
     num_gpus: 1
     num_workers: 0
     n_step: 3
     prioritized_replay: True
-    prioritized_replay_alpha: 0.5
-    sample_batch_size: 4
     train_batch_size: 128
-    schedule_max_timesteps: 2000000
-    target_network_update_freq: 20
+    target_network_update_freq: 100
     # specific for park env
     hiddens: []
     model: 
-      custom_model: parametric_actions_model
+      custom_model: parametric_rainbow_model

@@ -54,11 +54,11 @@ class ParametricRainbowModel(Model):
     """
 
     def _build_layers_v2(self, input_dict, num_outputs, options):
-        num_atoms = 51
-        vmax = 10.
-        support = tf.linspace(-vmax, vmax, num_atoms)
-
         action_mask = input_dict["obs"]["action_mask"]
+        num_actions = action_mask.shape[1]
+        num_atoms = 51
+        v_max = 10.
+        v_min = -10.
 
         # Standard FC net component.
         last_layer = input_dict["obs"]["graph"]
@@ -71,26 +71,39 @@ class ParametricRainbowModel(Model):
                 # kernel_initializer=normc_initializer(1.0),
                 activation=tf.nn.relu,
                 name=label)
-        last_layer = tf.layers.dense(
+        action_scores = tf.layers.dense(
             last_layer,
-            num_atoms * action_mask.shape[1],
+            num_atoms * num_actions,
             # kernel_initializer=normc_initializer(0.01),
             activation=None)
-        logits = tf.reshape(
-            last_layer, [-1, action_mask.shape[1], num_atoms])
-        probabilities = tf.contrib.layers.softmax(logits)
-        output = tf.reduce_sum(support * probabilities, axis=2, name='fc_out')
+        # Distributional Q-learning uses a discrete support z
+        # to represent the action value distribution
+        z = tf.range(num_atoms, dtype=tf.float32)
+        z = v_min + z * (v_max - v_min) / float(num_atoms - 1)
+        support_logits_per_action = tf.reshape(
+            tensor=action_scores, shape=(-1, num_actions, num_atoms))
+        support_prob_per_action = tf.nn.softmax(
+            logits=support_logits_per_action)
+        output = tf.reduce_sum(
+            input_tensor=z * support_prob_per_action, axis=-1)
 
-        # # Expand the model output to [BATCH, 1, EMBED_SIZE]. Note that the
-        # # avail actions tensor is of shape [BATCH, MAX_ACTIONS, EMBED_SIZE].
-        # intent_vector = tf.expand_dims(output, 1)
-        # avail_actions = tf.expand_dims(action_mask, 2)
-
-        # # Batch dot product => shape of logits is [BATCH, MAX_ACTIONS].
-        # action_logits = tf.reduce_sum(avail_actions * intent_vector, axis=2)
+        # # dueling architecture
+        # state_score = tf.layers.dense(
+        #     last_layer, units=num_atoms, activation=None)
+        # support_logits_per_action_mean = tf.reduce_mean(
+        #     support_logits_per_action, 1)
+        # support_logits_per_action_centered = (
+        #     support_logits_per_action - tf.expand_dims(
+        #         support_logits_per_action_mean, 1))
+        # support_logits_per_action = tf.expand_dims(
+        #     state_score, 1) + support_logits_per_action_centered
+        # support_prob_per_action = tf.nn.softmax(
+        #     logits=support_logits_per_action)
+        # output = tf.reduce_sum(
+        #     input_tensor=z * support_prob_per_action, axis=-1)
 
         # Mask out invalid actions (use tf.float32.min for stability)
         inf_mask = tf.maximum(tf.log(action_mask), tf.float32.min)
         masked_logits = inf_mask + output
 
-        return masked_logits, output
+        return masked_logits, last_layer
