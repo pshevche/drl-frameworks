@@ -1,23 +1,24 @@
-ray_ppo_cpu_cp0:
+ray_ppo_gpu_cp0:
   run: PPO
   env: RayParkQOptEnv-v0
   local_dir: "results/query_optimizer" 
   checkpoint_freq: 0
   checkpoint_at_end: False 
-  agent_training_steps: 20
-  agent_evaluation_steps: 20
+  agent_training_steps: 300
+  agent_evaluation_steps: 500
+  inference_steps: 1000
   # number of iterations
   stop:
-    training_iteration: 10
+    training_iteration: 1000
   # all other hyperparameters 
   config:
     # we want to evaluate manually, but still need the evaluator
     evaluation_interval: 1000000
     lr: 0.0001
-    num_cpus_for_driver: 0
     num_gpus: 1
-    num_workers: 0
+    num_workers: 4
     train_batch_size: 128
     # specific for park env
+    vf_share_layers: True
     model: 
-      custom_model: parametric_actions_model
+      custom_model: parametric_dqn_model

@@ -15,18 +15,18 @@ import psutil
 import pdb
 import signal
 import glob
+import socket
 from sklearn.model_selection import train_test_split
 import wget
 
 
 def find_available_port(orig_port):
-    conns = psutil.net_connections()
-    ports = [c.laddr.port for c in conns]
-    new_port = orig_port
-
-    while new_port in ports:
-        new_port += 1
-    return new_port
+    # pick a random free port
+    tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    tcp.bind(('', 0))
+    addr, port = tcp.getsockname()
+    tcp.close()
+    return port
 
 
 class QueryOptEnv(core.Env):
