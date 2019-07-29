@@ -18,6 +18,8 @@ ray_dqn_gpu_cp0:
     double_q: False 
     # we want to evaluate manually, but still need the evaluator
     evaluation_interval: 1000000
+    learning_starts: 500
+    hiddens: [512, 512]
     lr: 0.0001
     num_cpus_for_driver: 0
     num_gpus: 1
