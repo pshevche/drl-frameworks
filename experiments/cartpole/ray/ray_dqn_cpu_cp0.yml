@@ -6,7 +6,6 @@ ray_dqn_cpu_cp0:
   checkpoint_at_end: False 
   agent_training_steps: 1000
   agent_evaluation_steps: 1000
-  inference_steps: 100000
   # number of iterations
   stop:
     training_iteration: 500
@@ -18,7 +17,9 @@ ray_dqn_cpu_cp0:
     double_q: False
     # we want to evaluate manually, but still need the evaluator
     evaluation_interval: 1000000
-    lr: 0.001
+    hiddens: [512, 512]
+    learning_starts: 500
+    lr: 0.0001
     num_workers: 0
     prioritized_replay: False
     train_batch_size: 128

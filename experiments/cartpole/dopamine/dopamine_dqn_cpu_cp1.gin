@@ -19,12 +19,12 @@ DQNAgent.epsilon_fn = @dqn_agent.identity_epsilon
 DQNAgent.tf_device = '/cpu:*'  # use '/cpu:*' for non-GPU version
 DQNAgent.optimizer = @tf.train.AdamOptimizer()
 
-tf.train.AdamOptimizer.learning_rate = 0.001
+tf.train.AdamOptimizer.learning_rate = 0.0001
 tf.train.AdamOptimizer.epsilon = 0.0003125
 
 create_gym_environment.environment_name = 'CartPole'
 create_gym_environment.version = 'v0'
-create_agent.agent_name = 'dqn'
+create_parametric_agent.agent_name = 'dqn'
 CheckpointRunner.create_environment_fn = @gym_lib.create_gym_environment
 CheckpointRunner.num_iterations = 500
 CheckpointRunner.training_steps = 1000

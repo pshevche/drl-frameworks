@@ -34,13 +34,14 @@ tf.train.AdamOptimizer.epsilon = 0.0003125
 
 create_gym_environment.environment_name = 'CartPole'
 create_gym_environment.version = 'v0'
-create_agent.agent_name = 'implicit_quantile'
+create_parametric_agent.agent_name = 'implicit_quantile'
 CheckpointRunner.create_environment_fn = @gym_lib.create_gym_environment
 CheckpointRunner.num_iterations = 500
 CheckpointRunner.training_steps = 1000
 CheckpointRunner.evaluation_steps = 1000
 CheckpointRunner.max_steps_per_episode = 200  # Default max episode length.
 CheckpointRunner.checkpoint_freq = 0  # Checkpointing frequency.
+CheckpointRunner.inference_steps = 1000 # Measure runtime over this number of steps
 
 WrappedPrioritizedReplayBuffer.replay_capacity = 50000
 WrappedPrioritizedReplayBuffer.batch_size = 128

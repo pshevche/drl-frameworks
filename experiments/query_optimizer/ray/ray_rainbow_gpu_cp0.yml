@@ -1,0 +1,35 @@
+ray_rainbow_gpu_cp0:
+  run: DQN
+  env: RayParkQOptEnv-v0
+  local_dir: "results/query_optimizer" 
+  checkpoint_freq: 0
+  checkpoint_at_end: False 
+  agent_training_steps: 300
+  agent_evaluation_steps: 500
+  inference_steps: 1000
+  # number of iterations
+  stop:
+    training_iteration: 1000
+  # all other hyperparameters 
+  config:
+    adam_epsilon: 0.0003125
+    buffer_size: 50000
+    # we manually create dueling architecture
+    dueling: False
+    # we want to evaluate manually, but still need the evaluator
+    evaluation_interval: 1000000
+    learning_starts: 500
+    lr: 0.0001
+    # we manually create a network for distributed learning
+    num_atoms: 1
+    num_cpus_for_driver: 0
+    num_gpus: 1
+    num_workers: 0
+    n_step: 3
+    prioritized_replay: True
+    train_batch_size: 128
+    target_network_update_freq: 100
+    # specific for park env
+    hiddens: []
+    model: 
+      custom_model: parametric_rainbow_model

@@ -18,15 +18,17 @@
     "training": {
         "layers": [
             -1,
-            128,
+            512,
+            512,
             -1
         ],
         "activations": [
             "relu",
+            "relu",
             "linear"
         ],
         "minibatch_size": 128,
-        "learning_rate": 0.09,
+        "learning_rate": 0.0001,
         "optimizer": "ADAM",
         "lr_decay": 0.999
     },
@@ -34,7 +36,7 @@
         "num_episodes": 1000000,
         "max_steps": 200,
         "train_every_ts": 1,
-        "train_after_ts": 1,
+        "train_after_ts": 500,
         "test_every_ts": 1000,
         "test_after_ts": 1,
         "num_train_batches": 1,

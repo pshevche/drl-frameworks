@@ -18,8 +18,8 @@
     "training": {
         "layers": [
             -1,
-            128,
-            64,
+            512,
+            512,
             -1
         ],
         "activations": [
@@ -28,7 +28,7 @@
             "linear"
         ],
         "minibatch_size": 128,
-        "learning_rate": 0.001,
+        "learning_rate": 0.0001,
         "optimizer": "ADAM",
         "lr_decay": 0.999
     },
@@ -36,7 +36,7 @@
         "num_episodes": 1000000,
         "max_steps": 200,
         "train_every_ts": 1,
-        "train_after_ts": 1,
+        "train_after_ts": 500,
         "test_every_ts": 1000,
         "test_after_ts": 1,
         "num_train_batches": 1,
@@ -44,6 +44,7 @@
         "avg_over_num_steps": 1000,
         "offline_train_epochs": 30,
         "timesteps_total": 500000,
-        "checkpoint_after_ts": 0
+        "checkpoint_after_ts": 0,
+        "num_inference_steps": 1000
     }
 }

@@ -1,3 +1,10 @@
 .vscode/
 **/results/**
 **/__pycache__/**
+.pytest_cache
+**/*egg-info*/**
+**/test_results/**
+**/target/**
+data/
+**/.settings/**
+**/.m2/**

@@ -6,6 +6,7 @@ ray_rainbow_gpu_cp0:
   checkpoint_at_end: False 
   agent_training_steps: 1000
   agent_evaluation_steps: 1000
+  inference_steps: 1000
   # number of iterations
   stop:
     training_iteration: 500
@@ -20,9 +21,9 @@ ray_rainbow_gpu_cp0:
     exploration_fraction: .000001
     final_prioritized_replay_beta: 1.0
     gamma: 0.99
-    hiddens: [512]
-    learning_starts: 1000
-    lr: .09
+    hiddens: [512, 512]
+    learning_starts: 500
+    lr: .0001
     noisy: False
     num_atoms: 51
     num_cpus_for_driver: 0

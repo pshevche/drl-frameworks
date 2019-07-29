@@ -9,11 +9,11 @@ for fullfile in experiments/cartpole/ray/*.yml; do
     experiment="${filename%.*}"
     echo "--- STARTING EXPERIMENT ${experiment} --- "
     bash ./scripts/evaluation/clear_caches.sh
-    python src/ray/run_evaluation.py -f="experiments/cartpole/ray/${experiment}.yml"
+    export TUNE_RESULT_DIR=results/cartpole/${experiment}
+    python src/drl_fw/ray/run_evaluation.py -f="experiments/cartpole/ray/${experiment}.yml"
     echo "--- EXPERIMENT ${experiment} COMPLETED --- "
     echo
 done
-rm -rf ~/ray_results
 conda deactivate
 echo "--- RAY CARTPOLE EXPERIMENTS COMPLETED ---"
 echo
