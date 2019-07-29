@@ -7,7 +7,6 @@ conda env create -f config/environment.yml
 conda activate drl-frameworks-env
 # install packaged Horizon
 pip install lib/horizon-0.1.tar.gz
-pip install src/
 # install some dependencies missing in environment.yml
 pip install zmq psycopg2-binary networkx wget
 conda deactivate

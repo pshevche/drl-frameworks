@@ -7,6 +7,9 @@ setup(
     version="0.0.1",
     url="https://github.com/pshevche/drl-frameworks",
     packages=find_packages(),
+    package_data={
+        'park': ['join-order-benchmark/*.sql', 'query-optimizer/*', 'query-optimizer/src/main/java/*']
+    },
     install_requires=[],
     dependency_links=[],
 )

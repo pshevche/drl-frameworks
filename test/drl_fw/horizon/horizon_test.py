@@ -35,6 +35,13 @@ class TestHorizon(object):
             checkpoint_freq = params["run_details"]["checkpoint_after_ts"]
             # train agent
             dataset = RLDataset(FILE_PATH)
+            # log experiment info to Tensorboard
+            evaluation_file = EVALUATION_PATH
+            config_file = PARAMETERS
+            experiment_name = config_file[config_file.rfind(
+                '/') + 1: config_file.rfind('.json')]
+            os.environ["TENSORBOARD_DIR"] = os.path.join(
+                evaluation_file, experiment_name)
             average_reward_train, num_episodes_train, average_reward_eval, num_episodes_eval, timesteps_history, trainer, predictor, env = horizon_runner.run_gym(
                 params,
                 False,
@@ -46,17 +53,5 @@ class TestHorizon(object):
             if dataset:
                 dataset.save()
 
-            # log experiment info to Tensorboard
-            evaluation_file = EVALUATION_PATH
-            config_file = PARAMETERS
-            experiment_name = config_file[config_file.rfind(
-                '/') + 1: config_file.rfind('.json')]
-
-            tensorboard = Tensorboard(os.path.join(
-                evaluation_file, experiment_name))
-            for i in range(0, len(average_reward_eval)):
-                tensorboard.log_summary(
-                    average_reward_train[i], num_episodes_train[i], average_reward_eval[i], num_episodes_eval[i], i)
-            tensorboard.close()
         except Exception:
             pytest.fail('Horizon Smoke Test Failed')

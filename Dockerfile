@@ -51,11 +51,14 @@ ADD ./config drl-frameworks/config
 ADD ./scripts drl-frameworks/scripts
 ADD ./lib drl-frameworks/lib
 ADD ./scripts/docker/on_start.sh /usr/local/bin/on_start.sh
-RUN chmod 777 /usr/local/bin/on_start.sh
 
 # Set up project environment
 WORKDIR ${HOME}/drl-frameworks
 RUN bash ./scripts/docker/setup_docker_env.sh
+
+RUN chmod 777 /usr/local/bin/on_start.sh
+RUN find ${CONDA_PATH} -type d -exec chmod 777 {} \;
+
 
 # Define default command.
 CMD /usr/local/bin/on_start.sh
