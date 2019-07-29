@@ -8,7 +8,7 @@ ray_dqn_cpu_cp0:
   agent_evaluation_steps: 1000
   # number of iterations
   stop:
-    training_iteration: 500
+    training_iteration: 1000
   # all other hyperparameters 
   config:
     adam_epsilon: 0.0003125
