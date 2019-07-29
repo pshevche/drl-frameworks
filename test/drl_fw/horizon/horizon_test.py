@@ -1,3 +1,4 @@
+from ml.rl.tensorboardX import SummaryWriterContext
 import json
 import os
 import tensorflow as tf
@@ -15,43 +16,50 @@ horizon_runner.train = custom_train
 horizon_runner.create_trainer = create_park_trainer
 horizon_runner.create_predictor = create_park_predictor
 
-PARAMETERS = os.path.abspath(
-    './test/drl_fw/horizon/test_data/cartpole_small.json')
+PARAMS = [
+    ('CartPole', os.path.abspath('./test/drl_fw/horizon/test_data/cartpole_small.json')),
+    ('ParkQOpt', os.path.abspath('./test/drl_fw/horizon/test_data/qopt_small.json')),
+]
+
 FILE_PATH = os.path.abspath(
-    './test/drl_fw/dopamine/test_data/checkpoints.json')
+    './test/drl_fw/test_results/checkpoints.json')
 EVALUATION_PATH = os.path.abspath(
-    './test/drl_fw/dopamine/test_data')
+    './test/drl_fw/test_results')
 
 
-class TestHorizon(object):
-    def test_smoke(self):
-        """
-        Smoke test that runs a small CartPole experiment and fails if any exception during its execution was raised.
-        """
-        try:
-            with open(PARAMETERS) as f:
-                params = json.load(f)
+@pytest.mark.parametrize('env_name, config', PARAMS)
+def test_complete_experiment(env_name, config):
+    """
+    Smoke test that runs a small Park QOpt experiment and fails if any exception during its execution was raised.
+    """
+    try:
+        SummaryWriterContext._reset_globals()
 
-            checkpoint_freq = params["run_details"]["checkpoint_after_ts"]
-            # train agent
-            dataset = RLDataset(FILE_PATH)
-            # log experiment info to Tensorboard
-            evaluation_file = EVALUATION_PATH
-            config_file = PARAMETERS
-            experiment_name = config_file[config_file.rfind(
-                '/') + 1: config_file.rfind('.json')]
-            os.environ["TENSORBOARD_DIR"] = os.path.join(
-                evaluation_file, experiment_name)
-            average_reward_train, num_episodes_train, average_reward_eval, num_episodes_eval, timesteps_history, trainer, predictor, env = horizon_runner.run_gym(
-                params,
-                False,
-                None,
-                -1,
-                dataset
-            )
+        with open(config) as f:
+            params = json.load(f)
 
-            if dataset:
-                dataset.save()
+        checkpoint_freq = params["run_details"]["checkpoint_after_ts"]
+        # train agent
+        dataset = RLDataset(FILE_PATH)
+        # log experiment info to Tensorboard
+        evaluation_file = EVALUATION_PATH
+        config_file = config
+        experiment_name = config_file[config_file.rfind(
+            '/') + 1: config_file.rfind('.json')]
+        os.environ["TENSORBOARD_DIR"] = os.path.join(
+            evaluation_file, experiment_name)
+        average_reward_train, num_episodes_train, average_reward_eval, num_episodes_eval, timesteps_history, trainer, predictor, env = horizon_runner.run_gym(
+            params,
+            False,
+            None,
+            -1,
+            dataset
+        )
 
-        except Exception:
-            pytest.fail('Horizon Smoke Test Failed')
+        if dataset:
+            dataset.save()
+
+        SummaryWriterContext._reset_globals()
+    except Exception:
+        pytest.fail(
+            'Running a small ' + str(env_name) + ' experiment in Horizon failed!')

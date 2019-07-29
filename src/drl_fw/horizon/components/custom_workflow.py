@@ -487,7 +487,7 @@ def custom_train_gym_online_rl(
                 policy_id,
             )
 
-            if save_timesteps_to_dataset and (
+            if save_timesteps_to_dataset and checkpoint_after_ts != 0 and (
                     ts % checkpoint_after_ts == 0 or ts == timesteps_total):
                 save_timesteps_to_dataset.insert(
                     mdp_id=ep_i,

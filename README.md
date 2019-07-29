@@ -11,7 +11,7 @@ This repository contains the implementation part of our work in which we compare
 bash ./scripts/docker/init.sh
 ```
 4. Once the images are built, start Postgres and project containers by running `bash ./scripts/docker/start.sh`. When the script is done, you'll have access to the interactive terminal inside the project container.
-5. Once inside the container, you can validate the setup by running `pytest test/`.
+5. Once inside the container, you can validate the setup by running `bash ./scripts/test.sh`.
 6. Alternatively, proceed with the experiments by executing `bash ./scripts/evaluation/{environment}/eval_all.sh` for the complete evaluation or `bash ./scripts/evaluation/{environment}/eval_{framework}.sh` inside the container for evaluating single frameworks.
 7. Run `tensorboard --logdir=results` inside the container, and view the Tensorboard summary of evaluation results in your local browser at `localhost:6006`.
 
@@ -19,7 +19,7 @@ bash ./scripts/docker/init.sh
 1. Install Anaconda from [here][miniconda] (make sure to download the Python 3 version). Leave Anaconda's installation directory default (home/miniconda3).
 2. Check Anaconda's version by executing `conda -V`. If Anaconda's version is `<=4.6.8`, run `conda update conda`.
 3. Create project environment by running `bash ./scripts/setup_local_env.sh`.
-4. You can validate your setup by running `pytest test/`.
+4. You can validate your setup by running `bash ./scripts/test.sh`.
 5. If you'd like to evaluate the frameworks against the [Park][park]'s Query Optimizer environment, then do the following extra steps:
     - edit `/etc/hosts` file and add the following alias: `127.0.0.1   docker-pg`;
     - edit `/etc/hosts` file and add the following alias: `127.0.0.1   drl-fw`;

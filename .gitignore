@@ -3,8 +3,7 @@
 **/__pycache__/**
 .pytest_cache
 **/*egg-info*/**
-**/test_data/**
-!**/test_data/cartpole_small*
+**/test_results/**
 **/target/**
 data/
 **/.settings/**

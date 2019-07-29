@@ -1,11 +1,11 @@
-cartpole_small:
+qopt_small:
   run: DQN
-  env: CartPole-v0
-  local_dir: "test/drl_fw/test_results" 
-  checkpoint_freq: 1
+  env: RayParkQOptEnv-v0
+  local_dir: "test/drl_fw/test_results"
+  checkpoint_freq: 0
   checkpoint_at_end: False 
-  agent_training_steps: 100
-  agent_evaluation_steps: 100
+  agent_training_steps: 30
+  agent_evaluation_steps: 50
   # number of iterations
   stop:
     training_iteration: 5
@@ -17,7 +17,13 @@ cartpole_small:
     double_q: False
     # we want to evaluate manually, but still need the evaluator
     evaluation_interval: 1000000
+    learning_starts: 1000
     lr: 0.0001
     num_workers: 0
     prioritized_replay: False
     train_batch_size: 128
+    target_network_update_freq: 100
+    # specific for park env
+    hiddens: []
+    model: 
+      custom_model: parametric_dqn_model
