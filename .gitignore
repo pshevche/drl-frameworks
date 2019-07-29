@@ -7,3 +7,5 @@
 !**/test_data/cartpole_small*
 **/target/**
 data/
+**/.settings/**
+**/.m2/**
