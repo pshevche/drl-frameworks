@@ -5,6 +5,7 @@ from __future__ import division
 from __future__ import print_function
 
 import argparse
+import logging
 import os
 import tensorflow as tf
 import time
@@ -20,6 +21,8 @@ EXAMPLE_USAGE = """
 Training example via RLlib CLI:
     ./run_evaluation -f src/ray/experiments/cartpole/ray_dqn_cpu_cp1.yml
 """
+
+logger = logging.getLogger(__name__)
 
 
 def create_parser(parser_creator=None):
@@ -72,6 +75,7 @@ def run(args, parser):
 
     start_time = time.time()
     for iteration in range(num_iterations):
+        logger.info('Starting iteration ' + str(iteration))
         # train agent
         train_result = agent.train()
         average_reward_train = train_result["episode_reward_mean"]
