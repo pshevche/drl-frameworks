@@ -8,7 +8,6 @@ for fullfile in experiments/cartpole/dopamine/*.gin; do
     filename=$(basename -- "$fullfile")
     experiment="${filename%.*}"
     echo "--- STARTING EXPERIMENT ${experiment} --- "
-    bash ./scripts/evaluation/clear_caches.sh
     python src/drl_fw/dopamine/run_evaluation.py --base_dir="results/cartpole/" --gin_files="experiments/cartpole/dopamine/${experiment}.gin"
     echo "--- EXPERIMENT ${experiment} COMPLETED --- "
     echo
